@@ -1,46 +1,57 @@
-
 # Life Switch
-> **Control physical switches in the real world, remotely.**
 
-Life Switch is an experimental robotics project exploring how existing physical switches in our everyday lives can be controlled remotely using a small motorized device.
+Control physical switches in the real world, remotely.
 
-## Why I Started This
+I once turned on the air conditioner before leaving home and wondered if I had actually turned it off.
 
-One summer, I turned on the air conditioner before leaving home.
+That made me think about how many devices still require physical interaction.
 
-After I went outside, I suddenly wondered:
+Life Switch is an experimental project that uses a small motor to physically control existing switches remotely.
 
-> **"Did I actually turn it off?"**
+## Prototype
 
-That simple moment made me think about how many physical switches still exist around us.
+* ROBOTIS DYNAMIXEL XC430
+* U2D2
+* U2D2 Power Hub
+* 12V Power Supply
+* Python
+* Dynamixel SDK
+* Linux
 
-Air conditioners, lights, heaters, appliances, and many other devices are designed to be operated by a person standing right in front of them.
+The first prototype is being developed on a Linux laptop.
 
-So I started with a simple question:
+## Goal
 
-> **What if I could control those physical switches from my phone, even when I'm away from home?**
+Control existing physical switches from a phone or browser without modifying the device itself.
 
-Instead of replacing the existing appliance or modifying its internal electronics, Life Switch takes a different approach:
+The first prototype focuses on using a DYNAMIXEL motor to physically operate a switch.
 
-**Use a motor to physically interact with the existing switch.**
+## Roadmap
 
-This could potentially make many existing physical devices remotely controllable without requiring them to be replaced.
+### Phase 1 — Motor Control
 
-## The Idea
+* Set up Python environment
+* Install Dynamixel SDK
+* Connect U2D2
+* Communicate with XC430
+* Read motor state
+* Control motor position
+* Build a physical switch mechanism
 
-```text
-Phone / Browser
-       ↓
-   Web Interface
-       ↓
-     Web API
-       ↓
-     Python
-       ↓
-      U2D2
-       ↓
- DYNAMIXEL Motor
-       ↓
- Physical Switch
-       ↓
- Existing Device
+### Phase 2 — Remote Control
+
+* Build a Python control server
+* Create a web interface
+* Control the motor from a browser
+* Add basic safety controls
+
+### Phase 3 — Mobile
+
+* Mobile-friendly interface
+* Remote access
+* Device status
+* Explore PWA / mobile app
+
+## Vision
+
+Explore how existing physical interfaces can be controlled remotely.
