@@ -1,6 +1,8 @@
 # Life Switch
 
-Goal: Control physical switches in the real world, remotely.
+Goal: Control physical switches in the real world, remotely.<br>
+<br>
+<br>
 
 During a summer heat wave, I wanted to turn on the air conditioner before getting home.
 
