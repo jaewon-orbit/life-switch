@@ -27,7 +27,7 @@ The first prototype is being developed on a Linux laptop.
 
 ## Goal
 
-Control existing physical switches from a phone or browser without modifying the device itself.
+Control existing physical switches from a phone/browser without modifying the device itself.
 
 The first prototype focuses on using a DYNAMIXEL motor to physically operate a switch.
 
