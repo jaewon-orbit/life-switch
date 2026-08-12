@@ -2,9 +2,13 @@
 
 Control physical switches in the real world, remotely.
 
-I once turned on the air conditioner before leaving home and wondered if I had actually turned it off.
+During a summer heat wave, I wanted to turn on the air conditioner before getting home.
 
-That made me think about how many devices still require physical interaction.
+Another time, I left home and suddenly wondered, "Did I turn off the air conditioner?"
+
+
+
+These made me think about how many devices still require physical interaction.
 
 Life Switch is an experimental project that uses a small motor to physically control existing switches remotely.
 
