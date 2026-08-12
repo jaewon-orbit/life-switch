@@ -54,4 +54,4 @@ The first prototype focuses on using a DYNAMIXEL motor to physically operate a s
 
 ## Vision
 
-Explore how existing physical interfaces can be controlled remotely without replacing or modifying the devices themselves.
+Explore how existing physical interfaces can be controlled remotely.
