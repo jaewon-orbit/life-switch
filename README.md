@@ -6,8 +6,8 @@ During a summer heat wave, I wanted to turn on the air conditioner before gettin
 
 Another time, I left home and suddenly wondered, "Did I turn off the air conditioner?"
 <br>
-
-
+<br>
+<br>
 These made me think about how many devices still require physical interaction.
 
 Life Switch is an experimental project that uses a small motor to physically control existing switches remotely.
