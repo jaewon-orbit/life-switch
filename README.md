@@ -11,7 +11,6 @@ Another time, I left home and suddenly wondered, "Did I turn off the air conditi
 These made me think about how many devices still require physical interaction.
 <br>
 <br>
-<br>
 
 Life Switch is an experimental project that uses a small motor to physically control existing switches remotely.
 
