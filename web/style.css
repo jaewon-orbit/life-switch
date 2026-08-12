@@ -1,0 +1,118 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+h1 {
+  margin: 0 0 0.25rem;
+  font-size: 2rem;
+}
+
+.subtitle {
+  margin: 0 0 1.5rem;
+  color: #94a3b8;
+}
+
+.status-box {
+  background: #1e293b;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 2px solid #334155;
+}
+
+.status-box.on {
+  border-color: #22c55e;
+}
+
+.status-box.off {
+  border-color: #64748b;
+}
+
+.status-label {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+}
+
+.state {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.state.on {
+  color: #22c55e;
+}
+
+.state.off {
+  color: #94a3b8;
+}
+
+.position {
+  color: #cbd5e1;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.btn {
+  border: none;
+  border-radius: 12px;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn.on {
+  background: #16a34a;
+}
+
+.btn.off {
+  background: #475569;
+}
+
+.btn.toggle {
+  background: #2563eb;
+}
+
+.btn.status {
+  background: #7c3aed;
+  grid-column: span 2;
+}
+
+.message {
+  margin-top: 1rem;
+  min-height: 1.25rem;
+  color: #94a3b8;
+}
+
+.message.error {
+  color: #f87171;
+}
