@@ -1,6 +1,6 @@
 # Life Switch
 
-Goal: Control physical switches in the real world, remotely.<br>
+Goal: Control physical switches in the real world, remotely.
 <br>
 <br>
 
