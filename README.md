@@ -1,6 +1,6 @@
 # Life Switch
 
-# Goal
+## Goal
 
 Control physical switches in the real world, remotely.
 
