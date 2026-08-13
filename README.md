@@ -17,17 +17,17 @@ Life Switch is an experimental project that uses a small motor to physically con
 
 ## NOW NOW NOW - Latest Updates
 
-## 1. Remote Control over LTE
+### 1. Remote Control over LTE
 
 Successfully controlled the motor remotely from a mobile browser over LTE using Cloudflare Tunnel.
 
-## 2. Motor Change: XM430 → XC330
+### 2. Motor Change: XM430 → XC330
 
 Changed the motor from XM430 to XC330-M288T-T, which is smaller and more suitable for the physical switch prototype.
 
 The motor control code was also refactored to use motor profiles instead of motor-specific rotation values. This allows different motors to be tested without changing the core control logic.
 
-## 3. UI Revamp
+### 3. UI Revamp
 
 Redesigned the browser UI to make the remote switch control simpler and more intuitive.
 
@@ -35,7 +35,7 @@ Redesigned the browser UI to make the remote switch control simpler and more int
 |:---:|:---:|
 | <img src="./docs/images/ui-before.jpg" width="400"> | <img src="./docs/images/ui-revamp.jpg" width="400"> |
 
-## 4. Next? Standalone Control
+### 4. Next? Standalone Control
 
 The next goal is to control the switch independently from a PC.
 
@@ -55,51 +55,50 @@ WebSocket is being considered for bidirectional communication, with a custom dom
 Also, I will gonna use current-based control instead of position control to improve safety.
 
 
+## Roadmap
 
-## Prototype
+### Phase 1 — Motor Control
 
-* ROBOTIS DYNAMIXEL XC430
-* U2D2
-* U2D2 Power Hub
-* 12V Power Supply
-* Python
-* Dynamixel SDK
-* Linux
+*Developing in Linux
+* Set up Python environment
+* Explore Dynamixel Wizard 2,0, and Dynamixel SDK
+* Explore U2D2 (parts that connects PC with Dynamixel motor, abbreviation for 'USB to Dynamixel')
+* Control the motor by python script.
 
-The first prototype is being developed on a Linux laptop.
+### Phase 2 — Remote Control
 
-## Goal
+* Create a web interface for the PCand Monile
+* Control the motor from a browser using FAST API
+* Easily control from the browser using cloudflared.
 
-Control existing physical switches from a phone/browser without modifying the device itself.
-
-The first prototype focuses on using a DYNAMIXEL motor to physically operate a switch.
 
 ## Roadmap
 
 ### Phase 1 — Motor Control
 
-* Set up Python environment
-* Install Dynamixel SDK
-* Connect U2D2
-* Communicate with XC430
-* Read motor state
-* Control motor position
-* Build a physical switch mechanism
+* Developing in Linux (done)
+* Set up Python environment (done)
+* Explore DYNAMIXEL Wizard 2.0 and DYNAMIXEL SDK (done)
+* Explore U2D2 (USB to DYNAMIXEL, connecting a PC to a DYNAMIXEL motor) (done)
+* Control the motor with Python scripts (done)
+* Support different motors using motor profiles (done)
+* Switch from XM430 to XC330-M288T-T (done)
+* Use current-based control instead of position control for improved safety
 
 ### Phase 2 — Remote Control
 
-* Build a Python control server
-* Create a web interface
-* Control the motor from a browser
-* Add basic safety controls
+* Create a web interface for PC and mobile (done)
+* Control the motor from a browser using FastAPI (done)
+* Access and control the motor remotely over LTE using Cloudflare Tunnel (done)
+* Revamp the UI to make switch control simpler and more intuitive (done)
 
-### Phase 3 — Mobile
+### Phase 3 — Standalone Control
+Control the switch independently from a PC
 
-* Mobile-friendly interface
-* Remote access
-* Device status
-* Explore PWA / mobile app
+* Use ESP32 + OpenRB-150 to control the XC330
+* Connect the switch to the internet through ESP32
+* Control the switch remotely from a mobile device
+* Explore WebSocket for bidirectional communication
+* Using a custom domain for the remote connection
 
-## Vision
 
-Explore how existing physical interfaces can be controlled remotely.
