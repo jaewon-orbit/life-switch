@@ -55,22 +55,6 @@ WebSocket is being considered for bidirectional communication, with a custom dom
 Also, I will gonna use current-based control instead of position control to improve safety.
 
 
-## Roadmap
-
-### Phase 1 — Motor Control
-
-*Developing in Linux
-* Set up Python environment
-* Explore Dynamixel Wizard 2,0, and Dynamixel SDK
-* Explore U2D2 (parts that connects PC with Dynamixel motor, abbreviation for 'USB to Dynamixel')
-* Control the motor by python script.
-
-### Phase 2 — Remote Control
-
-* Create a web interface for the PCand Monile
-* Control the motor from a browser using FAST API
-* Easily control from the browser using cloudflared.
-
 
 ## Roadmap
 
