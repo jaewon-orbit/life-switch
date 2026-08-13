@@ -7,14 +7,11 @@ Control physical switches in the real world, remotely.
 During a summer heat wave, I wanted to turn on the air conditioner before getting home.
 Another time, I left home and suddenly wondered, "Did I turn off the air conditioner?"
 <br>
-<br>
 These made me think about how many devices still require physical interaction.
 <br>
-<br>
 Life Switch is an experimental project that uses a small motor to physically control existing switches remotely.
-
-
-
+<br>
+<br>
 # NOW NOW NOW - Latest Updates
 
 ### 1. Remote Control over LTE
@@ -53,9 +50,8 @@ Mobile Browser
 WebSocket is being considered for bidirectional communication, with a custom domain potentially used for the remote connection.
 
 Also, I will gonna use current-based control instead of position control to improve safety.
-
-
-
+<br>
+<br>
 # Roadmap
 
 ### Phase 1 — Motor Control
