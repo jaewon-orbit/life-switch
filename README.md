@@ -13,6 +13,47 @@ Another time, I left home and suddenly wondered, "Did I turn off the air conditi
 These made me think about how many devices still require physical interaction.<br><br>
 Life Switch is an experimental project that uses a small motor to physically control existing switches remotely.
 
+## NOW NOW NOW
+## Latest Updates
+
+### 1. Remote Control over LTE
+
+Successfully controlled the motor remotely from a mobile browser over LTE using Cloudflare Tunnel.
+
+### 2. Motor Change: XM430 → XC330
+
+Changed the motor from XM430 to XC330-M288T-T, which is smaller and more suitable for the physical switch prototype.
+
+The motor control code was also refactored to use motor profiles instead of motor-specific rotation values. This allows different motors to be tested without changing the core control logic.
+
+### 3. UI Revamp
+
+Redesigned the browser UI to make the remote switch control simpler and more intuitive.
+
+| Before | After |
+|:---:|:---:|
+| <img src="./docs/images/ui-before.jpg" width="400"> | <img src="./docs/images/ui-revamp.jpg" width="400"> |
+
+### 4. Next Phase: Standalone Control
+
+The next goal is to control the switch independently from a PC.
+
+ESP32 + OpenRB-150 will be used to connect the motor to the internet and enable remote control from a mobile device.
+
+Planned architecture:
+
+Mobile Browser
+→ Internet / LTE
+→ ESP32
+→ OpenRB-150
+→ XC330
+→ Physical Switch
+
+WebSocket is being considered for bidirectional communication, with a custom domain potentially used for the remote connection.
+
+
+
+
 ## Prototype
 
 * ROBOTIS DYNAMIXEL XC430
