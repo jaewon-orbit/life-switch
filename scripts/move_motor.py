@@ -1,29 +1,31 @@
 #!/usr/bin/env python3
 """
-Move an XM430 motor once via U2D2 (Protocol 2.0).
+Move a configured Dynamixel motor once via U2D2 (Protocol 2.0).
 
 Before running:
-  1. 12V power ON (Power Hub + XM430)
+  1. Power ON (12V for XM430, 5V for XC330)
   2. U2D2 plugged into USB (usually /dev/ttyUSB0)
   3. Close Dynamixel Wizard if it is open (only one app can use the port)
 
 Run:
   python scripts/move_motor.py
+  python scripts/move_motor.py --motor B
 """
 
+import argparse
 import sys
 import time
+from pathlib import Path
 
 from dynamixel_sdk import *  # noqa: F403
 
-# ----- Change these if needed -----
-DEVICENAME = "/dev/ttyUSB0"
-BAUDRATE = 4000000        # found by scan_motor.py
-PROTOCOL_VERSION = 2.0
-DXL_ID = 2
-# ----------------------------------
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-# XM430 control table (Protocol 2.0)
+from src.motor_profiles import get_motor_profile
+
+PROTOCOL_VERSION = 2.0
+
+# X-series control table (Protocol 2.0)
 ADDR_TORQUE_ENABLE = 64
 ADDR_GOAL_POSITION = 116
 ADDR_PRESENT_POSITION = 132
@@ -34,26 +36,51 @@ DXL_MAXIMUM_POSITION_VALUE = 4095
 DXL_MOVING_STATUS_THRESHOLD = 20
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Demo move for a configured motor.")
+    parser.add_argument(
+        "--motor",
+        help="Motor profile to use (A or B). Defaults to MOTOR env var, then A.",
+    )
+    return parser.parse_args()
+
+
 def main() -> int:
-    port_handler = PortHandler(DEVICENAME)
+    args = parse_args()
+
+    try:
+        profile = get_motor_profile(args.motor)
+    except ValueError as exc:
+        print(f"Error: {exc}")
+        return 1
+
+    device = profile.device
+    baudrate = profile.baudrate
+    dxl_id = profile.motor_id
+
+    print(
+        f"Using motor {profile.name}: {profile.model} "
+        f"(id={dxl_id}, baud={baudrate})"
+    )
+
+    port_handler = PortHandler(device)
     packet_handler = PacketHandler(PROTOCOL_VERSION)
 
     if not port_handler.openPort():
-        print(f"Failed to open port: {DEVICENAME}")
+        print(f"Failed to open port: {device}")
         return 1
 
-    if not port_handler.setBaudRate(BAUDRATE):
-        print(f"Failed to set baud rate: {BAUDRATE}")
+    if not port_handler.setBaudRate(baudrate):
+        print(f"Failed to set baud rate: {baudrate}")
         port_handler.closePort()
         return 1
 
-    print(f"Port open: {DEVICENAME} @ {BAUDRATE} baud, motor ID {DXL_ID}")
+    print(f"Port open: {device} @ {baudrate} baud, motor ID {dxl_id}")
 
-    # Ping first — quick check that the motor responds
-    model_number, result, error = packet_handler.ping(port_handler, DXL_ID)
+    model_number, result, error = packet_handler.ping(port_handler, dxl_id)
     if result != COMM_SUCCESS:
         print(f"Ping failed: {packet_handler.getTxRxResult(result)}")
-        print("Tips: check power, wiring, motor ID, and try BAUDRATE = 1000000")
+        print("Tips: check power, wiring, motor ID, and run scan_motor.py")
         port_handler.closePort()
         return 1
     if error:
@@ -63,28 +90,25 @@ def main() -> int:
 
     print(f"Motor found. Model number: {model_number}")
 
-    # Enable torque
     result, error = packet_handler.write1ByteTxRx(
-        port_handler, DXL_ID, ADDR_TORQUE_ENABLE, TORQUE_ENABLE
+        port_handler, dxl_id, ADDR_TORQUE_ENABLE, TORQUE_ENABLE
     )
     if result != COMM_SUCCESS or error:
         print("Failed to enable torque")
         port_handler.closePort()
         return 1
 
-    # Read current position
     present_position, result, error = packet_handler.read4ByteTxRx(
-        port_handler, DXL_ID, ADDR_PRESENT_POSITION
+        port_handler, dxl_id, ADDR_PRESENT_POSITION
     )
     if result != COMM_SUCCESS or error:
         print("Failed to read present position")
-        disable_torque(packet_handler, port_handler)
+        disable_torque(packet_handler, port_handler, dxl_id)
         port_handler.closePort()
         return 1
 
     print(f"Current position: {present_position}")
 
-    # Move to opposite end of range (small safe demo motion)
     if present_position > (DXL_MINIMUM_POSITION_VALUE + DXL_MAXIMUM_POSITION_VALUE) / 2:
         goal = DXL_MINIMUM_POSITION_VALUE + 400
     else:
@@ -92,18 +116,17 @@ def main() -> int:
 
     print(f"Moving to goal position: {goal}")
     result, error = packet_handler.write4ByteTxRx(
-        port_handler, DXL_ID, ADDR_GOAL_POSITION, goal
+        port_handler, dxl_id, ADDR_GOAL_POSITION, goal
     )
     if result != COMM_SUCCESS or error:
         print("Failed to write goal position")
-        disable_torque(packet_handler, port_handler)
+        disable_torque(packet_handler, port_handler, dxl_id)
         port_handler.closePort()
         return 1
 
-    # Wait until the motor stops moving
     while True:
         present_position, result, error = packet_handler.read4ByteTxRx(
-            port_handler, DXL_ID, ADDR_PRESENT_POSITION
+            port_handler, dxl_id, ADDR_PRESENT_POSITION
         )
         if result != COMM_SUCCESS or error:
             break
@@ -113,14 +136,14 @@ def main() -> int:
 
     print(f"Done. Final position: {present_position}")
 
-    disable_torque(packet_handler, port_handler)
+    disable_torque(packet_handler, port_handler, dxl_id)
     port_handler.closePort()
     return 0
 
 
-def disable_torque(packet_handler, port_handler) -> None:
+def disable_torque(packet_handler, port_handler, dxl_id: int) -> None:
     packet_handler.write1ByteTxRx(
-        port_handler, DXL_ID, ADDR_TORQUE_ENABLE, TORQUE_DISABLE
+        port_handler, dxl_id, ADDR_TORQUE_ENABLE, TORQUE_DISABLE
     )
 
 

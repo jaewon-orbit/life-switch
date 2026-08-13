@@ -1,18 +1,18 @@
-"""Control an XM430 motor over U2D2 using the Dynamixel SDK."""
+"""Control a Dynamixel motor over U2D2 using the Dynamixel SDK."""
 
 import time
 
 from dynamixel_sdk import *  # noqa: F403
 
-# Connection settings (from scan_motor.py)
-DEVICENAME = "/dev/ttyUSB0"
-BAUDRATE = 4000000
-PROTOCOL_VERSION = 2.0
-DXL_ID = 2
+from src.motor_profiles import get_motor_profile
 
-# Switch positions (0–4095). Tune these for your physical ON/OFF stops.
-OFF_POSITION = 400
-ON_POSITION = 3700
+_default = get_motor_profile()
+DEVICENAME = _default.device
+BAUDRATE = _default.baudrate
+PROTOCOL_VERSION = 2.0
+DXL_ID = _default.motor_id
+OFF_POSITION = _default.off_position
+ON_POSITION = _default.on_position
 
 # XM430 control table (Protocol 2.0)
 ADDR_TORQUE_ENABLE = 64

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Life Switch — XC330</title>
+
+  <link rel="stylesheet" href="/xc330_style.css">
+</head>
+
+<body>
+  <main class="container">
+
+    <header class="header">
+      <h1>Life Switch</h1>
+      <p>XC330-M288-T</p>
+    </header>
+
+
+    <section id="status-box" class="switch-card off">
+
+      <div class="bulb-wrapper">
+
+        <svg
+          id="bulb"
+          class="bulb"
+          viewBox="0 0 100 120"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-label="XC330 motor status"
+        >
+
+          <circle
+            class="bulb-glow"
+            cx="50"
+            cy="42"
+            r="32"
+          />
+
+          <path
+            class="bulb-glass"
+            d="M50 8
+               C31.8 8 17 22.8 17 41
+               C17 52.8 23.2 63.1 32.5 69.4
+               C36.5 72.1 38 76.1 38 81
+               H62
+               C62 76.1 63.5 72.1 67.5 69.4
+               C76.8 63.1 83 52.8 83 41
+               C83 22.8 68.2 8 50 8Z"
+          />
+
+          <path
+            class="bulb-base"
+            d="M38 81 H62 V89
+               C62 92.3 59.3 95 56 95
+               H44
+               C40.7 95 38 92.3 38 89Z"
+          />
+
+          <path
+            class="bulb-line"
+            d="M41 101 H59"
+          />
+
+        </svg>
+
+      </div>
+
+
+      <div class="state-area">
+
+        <div
+          id="state"
+          class="state off"
+        >
+          OFF
+        </div>
+
+        <div
+          id="position"
+          class="position"
+        >
+          Position —
+        </div>
+
+      </div>
+
+
+      <label class="toggle">
+
+        <input
+          id="toggle-switch"
+          type="checkbox"
+          aria-label="Toggle XC330 motor"
+        >
+
+        <span class="slider"></span>
+
+      </label>
+
+    </section>
+
+
+    <p
+      id="message"
+      class="message"
+      aria-live="polite"
+    ></p>
+
+  </main>
+
+
+  <script src="/xc330_app.js"></script>
+</body>
+</html>
