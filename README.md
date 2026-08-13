@@ -13,7 +13,7 @@ Long story short, I need it.
 Hope it’s easy to make.
 <br>
 <br>
-# NOW NOW NOW - Latest Updates
+# now now now Latest Updates
 
 ### 1. Remote Control over LTE
 
