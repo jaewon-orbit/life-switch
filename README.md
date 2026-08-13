@@ -1,8 +1,6 @@
 # Life Switch
 
 Control physical switches in the real world, remotely.
-
-Control physical switches from a phone or web browser. The first prototype uses a DYNAMIXEL motor to physically operate the switch.
 <br>
 <br>
 # Why?
