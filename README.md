@@ -15,7 +15,7 @@ Life Switch is an experimental project that uses a small motor to physically con
 
 
 
-## NOW NOW NOW - Latest Updates
+# NOW NOW NOW - Latest Updates
 
 ### 1. Remote Control over LTE
 
@@ -33,7 +33,7 @@ Redesigned the browser UI to make the remote switch control simpler and more int
 
 | Before | After |
 |:---:|:---:|
-| <img src="./docs/images/ui-before.jpg" width="400"> | <img src="./docs/images/ui-revamp.jpg" width="400"> |
+| <img src="./docs/images/ui-before.jpg" width="200"> | <img src="./docs/images/ui-revamp.jpg" width="200"> |
 
 ### 4. Next? Standalone Control
 
@@ -56,7 +56,7 @@ Also, I will gonna use current-based control instead of position control to impr
 
 
 
-## Roadmap
+# Roadmap
 
 ### Phase 1 — Motor Control
 
