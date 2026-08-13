@@ -1,6 +1,6 @@
 # Life Switch
 
-Control physical switches in the real world, remotely.
+Control physical switch in the real world, remotely.
 <br>
 <br>
 # Why Life Switch?
@@ -9,7 +9,8 @@ Another time, I left home and suddenly wondered, "Did I turn off the air conditi
 <br>
 These made me think about how many devices still require physical interaction.
 <br>
-Life Switch is an experimental project that uses a small motor to physically control existing switches remotely.
+Long story short, I needed this simple thing so I’m making it.
+Hope it’s easy to make.
 <br>
 <br>
 # NOW NOW NOW - Latest Updates
@@ -80,5 +81,3 @@ Control the switch independently from a PC
 * Control the switch remotely from a mobile device
 * Explore WebSocket for bidirectional communication
 * Using a custom domain for the remote connection
-
-
