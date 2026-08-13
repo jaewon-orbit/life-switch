@@ -25,15 +25,10 @@ from src.motor_profiles import get_motor_profile
 
 PROTOCOL_VERSION = 2.0
 
-# X-series control table (Protocol 2.0)
-ADDR_TORQUE_ENABLE = 64
-ADDR_GOAL_POSITION = 116
-ADDR_PRESENT_POSITION = 132
 TORQUE_ENABLE = 1
 TORQUE_DISABLE = 0
 DXL_MINIMUM_POSITION_VALUE = 0
 DXL_MAXIMUM_POSITION_VALUE = 4095
-DXL_MOVING_STATUS_THRESHOLD = 20
 
 
 def parse_args() -> argparse.Namespace:
@@ -57,6 +52,10 @@ def main() -> int:
     device = profile.device
     baudrate = profile.baudrate
     dxl_id = profile.motor_id
+    addr_torque_enable = profile.addr_torque_enable
+    addr_goal_position = profile.addr_goal_position
+    addr_present_position = profile.addr_present_position
+    moving_threshold = profile.moving_threshold
 
     print(
         f"Using motor {profile.name}: {profile.model} "
@@ -91,7 +90,7 @@ def main() -> int:
     print(f"Motor found. Model number: {model_number}")
 
     result, error = packet_handler.write1ByteTxRx(
-        port_handler, dxl_id, ADDR_TORQUE_ENABLE, TORQUE_ENABLE
+        port_handler, dxl_id, addr_torque_enable, TORQUE_ENABLE
     )
     if result != COMM_SUCCESS or error:
         print("Failed to enable torque")
@@ -99,11 +98,11 @@ def main() -> int:
         return 1
 
     present_position, result, error = packet_handler.read4ByteTxRx(
-        port_handler, dxl_id, ADDR_PRESENT_POSITION
+        port_handler, dxl_id, addr_present_position
     )
     if result != COMM_SUCCESS or error:
         print("Failed to read present position")
-        disable_torque(packet_handler, port_handler, dxl_id)
+        disable_torque(packet_handler, port_handler, dxl_id, addr_torque_enable)
         port_handler.closePort()
         return 1
 
@@ -116,34 +115,36 @@ def main() -> int:
 
     print(f"Moving to goal position: {goal}")
     result, error = packet_handler.write4ByteTxRx(
-        port_handler, dxl_id, ADDR_GOAL_POSITION, goal
+        port_handler, dxl_id, addr_goal_position, goal
     )
     if result != COMM_SUCCESS or error:
         print("Failed to write goal position")
-        disable_torque(packet_handler, port_handler, dxl_id)
+        disable_torque(packet_handler, port_handler, dxl_id, addr_torque_enable)
         port_handler.closePort()
         return 1
 
     while True:
         present_position, result, error = packet_handler.read4ByteTxRx(
-            port_handler, dxl_id, ADDR_PRESENT_POSITION
+            port_handler, dxl_id, addr_present_position
         )
         if result != COMM_SUCCESS or error:
             break
-        if abs(goal - present_position) <= DXL_MOVING_STATUS_THRESHOLD:
+        if abs(goal - present_position) <= moving_threshold:
             break
         time.sleep(0.05)
 
     print(f"Done. Final position: {present_position}")
 
-    disable_torque(packet_handler, port_handler, dxl_id)
+    disable_torque(packet_handler, port_handler, dxl_id, addr_torque_enable)
     port_handler.closePort()
     return 0
 
 
-def disable_torque(packet_handler, port_handler, dxl_id: int) -> None:
+def disable_torque(
+    packet_handler, port_handler, dxl_id: int, addr_torque_enable: int
+) -> None:
     packet_handler.write1ByteTxRx(
-        port_handler, dxl_id, ADDR_TORQUE_ENABLE, TORQUE_DISABLE
+        port_handler, dxl_id, addr_torque_enable, TORQUE_DISABLE
     )
 
 

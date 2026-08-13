@@ -14,13 +14,8 @@ DXL_ID = _default.motor_id
 OFF_POSITION = _default.off_position
 ON_POSITION = _default.on_position
 
-# XM430 control table (Protocol 2.0)
-ADDR_TORQUE_ENABLE = 64
-ADDR_GOAL_POSITION = 116
-ADDR_PRESENT_POSITION = 132
 TORQUE_ENABLE = 1
 TORQUE_DISABLE = 0
-MOVING_THRESHOLD = 20
 
 
 class MotorController:
@@ -31,12 +26,20 @@ class MotorController:
         motor_id: int = DXL_ID,
         off_position: int = OFF_POSITION,
         on_position: int = ON_POSITION,
+        addr_torque_enable: int = _default.addr_torque_enable,
+        addr_goal_position: int = _default.addr_goal_position,
+        addr_present_position: int = _default.addr_present_position,
+        moving_threshold: int = _default.moving_threshold,
     ) -> None:
         self.device = device
         self.baudrate = baudrate
         self.motor_id = motor_id
         self.off_position = off_position
         self.on_position = on_position
+        self.addr_torque_enable = addr_torque_enable
+        self.addr_goal_position = addr_goal_position
+        self.addr_present_position = addr_present_position
+        self.moving_threshold = moving_threshold
         self.port_handler = PortHandler(device)
         self.packet_handler = PacketHandler(PROTOCOL_VERSION)
         self._connected = False
@@ -83,7 +86,7 @@ class MotorController:
     def enable_torque(self) -> None:
         self._check_comm(
             *self.packet_handler.write1ByteTxRx(
-                self.port_handler, self.motor_id, ADDR_TORQUE_ENABLE, TORQUE_ENABLE
+                self.port_handler, self.motor_id, self.addr_torque_enable, TORQUE_ENABLE
             ),
             "enable torque",
         )
@@ -92,12 +95,12 @@ class MotorController:
         if not self._connected:
             return
         self.packet_handler.write1ByteTxRx(
-            self.port_handler, self.motor_id, ADDR_TORQUE_ENABLE, TORQUE_DISABLE
+            self.port_handler, self.motor_id, self.addr_torque_enable, TORQUE_DISABLE
         )
 
     def get_position(self) -> int:
         position, result, error = self.packet_handler.read4ByteTxRx(
-            self.port_handler, self.motor_id, ADDR_PRESENT_POSITION
+            self.port_handler, self.motor_id, self.addr_present_position
         )
         self._check_comm(result, error, "read position")
         return position
@@ -106,7 +109,7 @@ class MotorController:
         self.enable_torque()
         self._check_comm(
             *self.packet_handler.write4ByteTxRx(
-                self.port_handler, self.motor_id, ADDR_GOAL_POSITION, goal
+                self.port_handler, self.motor_id, self.addr_goal_position, goal
             ),
             "write goal position",
         )
@@ -116,7 +119,7 @@ class MotorController:
 
         while True:
             position = self.get_position()
-            if abs(goal - position) <= MOVING_THRESHOLD:
+            if abs(goal - position) <= self.moving_threshold:
                 return position
             time.sleep(0.05)
 

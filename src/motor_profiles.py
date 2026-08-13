@@ -15,6 +15,10 @@ class MotorProfile:
     motor_id: int
     off_position: int
     on_position: int
+    addr_torque_enable: int
+    addr_goal_position: int
+    addr_present_position: int
+    moving_threshold: int
     power_supply: str = "12V"
 
     def as_controller_kwargs(self) -> dict:
@@ -24,6 +28,10 @@ class MotorProfile:
             "motor_id": self.motor_id,
             "off_position": self.off_position,
             "on_position": self.on_position,
+            "addr_torque_enable": self.addr_torque_enable,
+            "addr_goal_position": self.addr_goal_position,
+            "addr_present_position": self.addr_present_position,
+            "moving_threshold": self.moving_threshold,
         }
 
 
@@ -38,6 +46,10 @@ MOTORS: dict[str, MotorProfile] = {
         motor_id=2,
         off_position=400,
         on_position=3700,
+        addr_torque_enable=64,
+        addr_goal_position=116,
+        addr_present_position=132,
+        moving_threshold=20,
     ),
     "B": MotorProfile(
         name="B",
@@ -48,6 +60,10 @@ MOTORS: dict[str, MotorProfile] = {
         # XC330: 4095 units ≈ 360°, so 180° = 2048 units of travel.
         off_position=400,
         on_position=2448,
+        addr_torque_enable=64,
+        addr_goal_position=116,
+        addr_present_position=132,
+        moving_threshold=20,
         power_supply="5V",
     ),
 }
