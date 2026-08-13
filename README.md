@@ -1,32 +1,36 @@
 # Life Switch
 
-Goal: Control physical switches in the real world, remotely.
-<br>
-<br>
+# Goal
 
+Control physical switches in the real world, remotely.
+
+Control physical switches from a phone or web browser. The first prototype uses a DYNAMIXEL motor to physically operate the switch.
+<br>
+<br>
+# Why?
 During a summer heat wave, I wanted to turn on the air conditioner before getting home.
-
 Another time, I left home and suddenly wondered, "Did I turn off the air conditioner?"
 <br>
 <br>
+These made me think about how many devices still require physical interaction.
 <br>
-These made me think about how many devices still require physical interaction.<br><br>
+<br>
 Life Switch is an experimental project that uses a small motor to physically control existing switches remotely.
 
-## NOW NOW NOW
+## NOW NOW NOW 
 ## Latest Updates
 
-### 1. Remote Control over LTE
+## 1. Remote Control over LTE
 
 Successfully controlled the motor remotely from a mobile browser over LTE using Cloudflare Tunnel.
 
-### 2. Motor Change: XM430 → XC330
+## 2. Motor Change: XM430 → XC330
 
 Changed the motor from XM430 to XC330-M288T-T, which is smaller and more suitable for the physical switch prototype.
 
 The motor control code was also refactored to use motor profiles instead of motor-specific rotation values. This allows different motors to be tested without changing the core control logic.
 
-### 3. UI Revamp
+## 3. UI Revamp
 
 Redesigned the browser UI to make the remote switch control simpler and more intuitive.
 
@@ -34,7 +38,7 @@ Redesigned the browser UI to make the remote switch control simpler and more int
 |:---:|:---:|
 | <img src="./docs/images/ui-before.jpg" width="400"> | <img src="./docs/images/ui-revamp.jpg" width="400"> |
 
-### 4. Next Phase: Standalone Control
+## 4. Next? Standalone Control
 
 The next goal is to control the switch independently from a PC.
 
@@ -51,6 +55,7 @@ Mobile Browser
 
 WebSocket is being considered for bidirectional communication, with a custom domain potentially used for the remote connection.
 
+Also, I will gonna use current-based control instead of position control to improve safety.
 
 
 
