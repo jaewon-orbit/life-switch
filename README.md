@@ -3,7 +3,7 @@
 Control physical switches in the real world, remotely.
 <br>
 <br>
-# Why?
+# Why Life Switch?
 During a summer heat wave, I wanted to turn on the air conditioner before getting home.
 Another time, I left home and suddenly wondered, "Did I turn off the air conditioner?"
 <br>
