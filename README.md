@@ -6,10 +6,10 @@ Control physical switch in the real world, remotely.
 # Why Life Switch?
 During a summer heat wave, I wanted to turn on the air conditioner before getting home. <br>
 Another time, I left home and suddenly wondered, "Did I turn off the air conditioner?"
+<br><br>
+There's many devices still require physical interaction.
 <br>
-These made me think about how many devices still require physical interaction.
-<br>
-Long story short, I needed this simple thing so I’m making it.
+Long story short, I need it.
 Hope it’s easy to make.
 <br>
 <br>
