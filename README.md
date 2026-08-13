@@ -13,6 +13,8 @@ These made me think about how many devices still require physical interaction.
 <br>
 Life Switch is an experimental project that uses a small motor to physically control existing switches remotely.
 
+
+
 ## NOW NOW NOW - Latest Updates
 
 ### 1. Remote Control over LTE
