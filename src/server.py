@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from src.motor_controller import MotorController
@@ -105,9 +105,29 @@ _register_motor_routes("/api", "A")
 _register_motor_routes("/api/xc330", "B")
 
 
+def _motor_connected(profile_name: str) -> bool:
+    motor = motors.get(profile_name)
+    return motor is not None and motor._connected
+
+
+@app.get("/", response_model=None)
+def root_page() -> RedirectResponse | FileResponse:
+    """Send Cloudflare/root visitors to the UI for the connected motor."""
+    if _motor_connected("B"):
+        return RedirectResponse(url="/xc330", status_code=302)
+    if _motor_connected("A"):
+        return RedirectResponse(url="/xm430", status_code=302)
+    return FileResponse(WEB_DIR / "landing.html")
+
+
+@app.get("/xm430")
+def xm430_page() -> FileResponse:
+    return FileResponse(WEB_DIR / "index.html")
+
+
 @app.get("/xc330")
 def xc330_page() -> FileResponse:
     return FileResponse(WEB_DIR / "xc330_index.html")
 
 
-app.mount("/", StaticFiles(directory=WEB_DIR, html=True), name="web")
+app.mount("/", StaticFiles(directory=WEB_DIR, html=False), name="web")
