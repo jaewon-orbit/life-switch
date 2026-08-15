@@ -81,3 +81,20 @@ Control the switch independently from a PC
 * Control the switch remotely from a mobile device
 * Explore WebSocket for bidirectional communication
 * Using a custom domain for the remote connection
+
+## OpenRB-150 XC330 control (current test setup)
+
+The OpenRB-150 now controls the XC330-M288-T directly. The firmware in
+[`firmware/openrb_xc330/`](./firmware/openrb_xc330/) receives commands over its
+USB connection and runs a 180° return trip at the configured speed; it turns
+torque and DYNAMIXEL power off when finished.
+
+With the OpenRB connected at `/dev/ttyACM0`, run this from the project root:
+
+```bash
+python scripts/move_openrb_xc330.py --port /dev/ttyACM0
+```
+
+This sends `MOVE` to the OpenRB. The existing
+[`scripts/move_motor.py`](./scripts/move_motor.py) remains the separate U2D2
+motor-control script.
