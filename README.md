@@ -60,7 +60,8 @@ USB connection and runs a 180° return trip at the configured speed; it turns
 torque and DYNAMIXEL power off when finished.
 
 
-run this scripts to move the motor with OpenRB(/dev/ttyACM0)
+run this scripts to move the motor with OpenRB
+(my port is (/dev/ttyACM0))
 
 ```bash
 python scripts/move_openrb_xc330.py --port /dev/ttyACM0
