@@ -64,6 +64,12 @@ run this scripts to move the motor with OpenRB(/dev/ttyACM0)
 
 ```bash
 python scripts/move_openrb_xc330.py --port /dev/ttyACM0
+```
+
+this sends `MOVE` to the OpenRB. Existing
+[`scripts/move_motor.py`](./scripts/move_motor.py) remains the separate U2D2
+motor-control script.
+
 <br>
 <br>
 # Roadmap
@@ -95,9 +101,3 @@ Control the switch independently from a PC
 * Explore WebSocket for bidirectional communication
 * Using a custom domain for the remote connection
 
-
-```
-
-this sends `MOVE` to the OpenRB. Existing
-[`scripts/move_motor.py`](./scripts/move_motor.py) remains the separate U2D2
-motor-control script.
