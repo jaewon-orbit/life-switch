@@ -51,8 +51,30 @@ Mobile Browser
 WebSocket is being considered for bidirectional communication, with a custom domain potentially used for the remote connection.
 
 Also, I will gonna use current-based control instead of position control to improve safety.
+
+
+### 5. OpenRB-150 XC330 control (current test setup)
+
+OpenRB-150 now controls the XC330-M288-T directly. The firmware in
+[`firmware/openrb_xc330/`](./firmware/openrb_xc330/) receives commands over its
+USB connection and runs a 180° return trip at the configured speed; it turns
+torque and DYNAMIXEL power off when finished.
+
+
+run this scripts to move the motor with OpenRB
+(my port is (/dev/ttyACM0))
+
+```bash
+python scripts/move_openrb_xc330.py --port /dev/ttyACM0
+```
+
+this sends `MOVE` to the OpenRB. Existing
+[`scripts/move_motor.py`](./scripts/move_motor.py) remains the separate U2D2
+motor-control script.
+
 <br>
 <br>
+
 # Roadmap
 
 ### Phase 1 — Motor Control
