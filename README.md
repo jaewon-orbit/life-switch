@@ -19,7 +19,7 @@ Hope it’s easy to make.
 
 Successfully controlled the motor remotely from a mobile browser over LTE using Cloudflare Tunnel.
 
-<img src="./docs/images/motor_move_LTE.png" width="400" alt="Motor controlled remotely over LTE">
+<img src="./docs/images/motor_move_LTE.png" width="200" alt="Motor controlled remotely over LTE">
 
 ### 2. Motor Change: XM430 → XC330
 
