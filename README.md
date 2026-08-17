@@ -19,6 +19,8 @@ Hope it’s easy to make.
 
 Successfully controlled the motor remotely from a mobile browser over LTE using Cloudflare Tunnel.
 
+<img src="./docs/images/motor_move_LTE.png" width="400" alt="Motor controlled remotely over LTE">
+
 ### 2. Motor Change: XM430 → XC330
 
 Changed the motor from XM430 to XC330-M288T-T, which is smaller and more suitable for the physical switch prototype.
@@ -70,6 +72,13 @@ python scripts/move_openrb_xc330.py --port /dev/ttyACM0
 this sends `MOVE` to the OpenRB. Existing
 [`scripts/move_motor.py`](./scripts/move_motor.py) remains the separate U2D2
 motor-control script.
+
+### 6. ESP32 Control
+
+Successfully controlled the robot with ESP32, using OpenRB as the motor control interface.
+Starting from the ground up is always the key to solving complex problems.
+
+<img src="./docs/images/esp32_openrb_motor.jpg" width="400" alt="ESP32 and OpenRB motor control setup">
 
 <br>
 <br>
