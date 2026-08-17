@@ -102,4 +102,3 @@ Control the switch independently from a PC
 * Control the switch remotely from a mobile device
 * Explore WebSocket for bidirectional communication
 * Using a custom domain for the remote connection
-

@@ -33,7 +33,7 @@ Protocol 2.0, motor ID `1`, and baudrate `57600`.
    Close Serial Monitor if it is open, then run from the project root:
 
    ```bash
-   python scripts/move_openrb_xc330.py --port /dev/ttyACM0
+   python scripts/move_openrb_xc330.py --port /dev/ttyACM1
    ```
 
    The script sends `MOVE`. The board makes a faster half-turn (2048 counts,
@@ -42,6 +42,13 @@ Protocol 2.0, motor ID `1`, and baudrate `57600`.
 
 If it prints a ping error, confirm the OpenRB red **DXL** LED lights during the
 test, then check cable seating, 5 V power, motor ID `1`, and baudrate `57600`.
+
+## ESP32 UART wiring test
+
+For a non-motor check of the ESP32 link, use the paired sketch in
+[`../esp32_openrb_uart_test/`](../esp32_openrb_uart_test/). On OpenRB-150,
+`Serial3` uses D13 as RX and D14 as TX; do not use the DYNAMIXEL `Serial1`
+port for this link.
 
 ## References
 
