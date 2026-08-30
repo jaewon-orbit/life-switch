@@ -137,3 +137,6 @@ Control the switch independently from a PC
 * Control the switch remotely from a mobile device
 * Explore WebSocket for bidirectional communication
 * Using a custom domain for the remote connection
+
+### User Requirements
+* You gotta enter your Wi-Fi SSID and password in secret.h file. This will make ESP32 connect to Wi-Fi.
