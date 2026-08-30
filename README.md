@@ -83,6 +83,32 @@ Starting from the ground up is always the key to solving complex problems.
 <br>
 <br>
 
+## Test 3-1 — FastAPI through a Cloudflare Quick Tunnel
+
+Use this temporary setup to access the existing XC330 web UI from a phone on
+LTE. It does not need a custom domain or a Cloudflare account.
+
+In the first terminal, start the existing FastAPI server:
+
+```bash
+python -m uvicorn src.server:app --host 127.0.0.1 --port 8000
+```
+
+In a second terminal, create the Quick Tunnel:
+
+```bash
+bash scripts/start_quick_tunnel.sh
+```
+
+`cloudflared` prints an `https://…trycloudflare.com` URL. Open that exact URL
+on the phone while Wi-Fi is turned off. The root URL redirects to `/xc330`
+when the XC330 is connected; otherwise open `https://…trycloudflare.com/xc330`.
+
+The Quick Tunnel URL is random and stops working as soon as `cloudflared` is
+stopped. Treat it like a temporary public remote-control link: share it only
+with people you trust. The FastAPI server stays bound to `127.0.0.1`, so only
+the Cloudflare tunnel exposes it externally.
+
 # Roadmap
 
 ### Phase 1 — Motor Control

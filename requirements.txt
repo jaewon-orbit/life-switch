@@ -2,3 +2,4 @@ dynamixel-sdk>=4.0.0
 pyserial>=3.5
 fastapi>=0.100.0
 uvicorn>=0.23.0
+websockets>=12.0

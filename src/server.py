@@ -1,9 +1,11 @@
-"""FastAPI web server for remote motor control."""
+"""FastAPI web server for remote motor control and ESP32 connectivity tests."""
 
+import asyncio
 from contextlib import asynccontextmanager
+from datetime import datetime, timezone
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -16,6 +18,19 @@ motors: dict[str, MotorController | None] = {
     "A": None,
     "B": None,
 }
+
+# Test 3-2: one ESP32 connects outward to this endpoint through Cloudflare.
+# This is deliberately separate from motor-control commands; it only confirms
+# a PING/PONG WebSocket round trip.
+esp32_socket: WebSocket | None = None
+esp32_last_pong_at: str | None = None
+esp32_last_message: str | None = None
+esp32_command_lock = asyncio.Lock()
+esp32_command_reply: asyncio.Future[str] | None = None
+
+
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
 
 
 def _require_motor(profile_name: str) -> MotorController:
@@ -55,7 +70,7 @@ def _connect_motor(profile_name: str) -> MotorController | None:
     motor = MotorController(**profile.as_controller_kwargs())
     try:
         motor.connect()
-    except RuntimeError as exc:
+    except Exception as exc:
         print(f"Motor {profile.name} not connected at startup: {exc}")
         return None
     return motor
@@ -74,6 +89,118 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Life Switch", version="0.1.0", lifespan=lifespan)
+
+
+@app.get("/api/esp32/status")
+def esp32_status() -> dict:
+    """Report the Test 3-2 WebSocket connection state."""
+    return {
+        "connected": esp32_socket is not None,
+        "last_pong_at": esp32_last_pong_at,
+        "last_message": esp32_last_message,
+    }
+
+
+@app.websocket("/ws/esp32")
+async def esp32_websocket(websocket: WebSocket) -> None:
+    """Continuously verify the ESP32's Cloudflare WebSocket connection."""
+    global esp32_command_reply, esp32_last_message, esp32_last_pong_at, esp32_socket
+
+    await websocket.accept()
+    esp32_socket = websocket
+    print("ESP32 WebSocket connected")
+
+    async def send_pings() -> None:
+        while True:
+            await websocket.send_text("PING")
+            await asyncio.sleep(10)
+
+    ping_task = asyncio.create_task(send_pings())
+
+    try:
+        while True:
+            message = await asyncio.wait_for(websocket.receive_text(), timeout=30)
+            esp32_last_message = message
+
+            if message == "PONG":
+                esp32_last_pong_at = _utc_now()
+                print(f"ESP32 WebSocket PONG at {esp32_last_pong_at}")
+            else:
+                print(f"ESP32 WebSocket message: {message}")
+
+                # ESP32 forwards an OpenRB reply in this form. A single
+                # command at a time is allowed, so its reply can be paired
+                # safely with the HTTP request that sent the command.
+                if message.startswith("OPENRB ") and esp32_command_reply:
+                    if not esp32_command_reply.done():
+                        esp32_command_reply.set_result(message.removeprefix("OPENRB "))
+    except asyncio.TimeoutError:
+        print("ESP32 WebSocket timed out waiting for PONG")
+        await websocket.close(code=1011, reason="PONG timeout")
+    except WebSocketDisconnect:
+        print("ESP32 WebSocket disconnected")
+    finally:
+        ping_task.cancel()
+        try:
+            await ping_task
+        except asyncio.CancelledError:
+            pass
+        if esp32_socket is websocket:
+            esp32_socket = None
+
+
+async def _send_esp32_command(command: str, timeout: float = 15.0) -> str:
+    """Send one XC330 command through ESP32 and await its OpenRB reply."""
+    global esp32_command_reply
+
+    async with esp32_command_lock:
+        if esp32_socket is None:
+            raise HTTPException(
+                status_code=503,
+                detail="ESP32 WebSocket is not connected.",
+            )
+
+        reply_future = asyncio.get_running_loop().create_future()
+        esp32_command_reply = reply_future
+        try:
+            await esp32_socket.send_text(command)
+            return await asyncio.wait_for(reply_future, timeout=timeout)
+        except asyncio.TimeoutError as exc:
+            raise HTTPException(
+                status_code=504,
+                detail=f"Timed out waiting for OpenRB reply to {command}.",
+            ) from exc
+        finally:
+            if esp32_command_reply is reply_future:
+                esp32_command_reply = None
+
+
+def _xc330_position_from_reply(reply: str) -> int:
+    """Read the numeric position from OpenRB's DONE or STATUS reply."""
+    parts = reply.split()
+    if len(parts) == 2 and parts[0] in {"DONE", "STATUS"}:
+        try:
+            return int(parts[1])
+        except ValueError:
+            pass
+    raise HTTPException(status_code=502, detail=f"OpenRB error: {reply}")
+
+
+def _xc330_status_from_position(position: int) -> dict:
+    profile = get_motor_profile("B")
+    state = (
+        "on"
+        if abs(position - profile.on_position) < abs(position - profile.off_position)
+        else "off"
+    )
+    return {
+        "state": state,
+        "position": position,
+        "on_target": profile.on_position,
+        "off_target": profile.off_position,
+        "motor": profile.name,
+        "model": profile.model,
+    }
 
 
 def _register_motor_routes(prefix: str, profile_name: str) -> None:
@@ -102,7 +229,30 @@ def _register_motor_routes(prefix: str, profile_name: str) -> None:
 
 
 _register_motor_routes("/api", "A")
-_register_motor_routes("/api/xc330", "B")
+
+
+@app.post("/api/xc330/on")
+async def api_xc330_on() -> dict:
+    position = _xc330_position_from_reply(await _send_esp32_command("ON"))
+    return {"state": "on", "position": position}
+
+
+@app.post("/api/xc330/off")
+async def api_xc330_off() -> dict:
+    position = _xc330_position_from_reply(await _send_esp32_command("OFF"))
+    return {"state": "off", "position": position}
+
+
+@app.post("/api/xc330/toggle")
+async def api_xc330_toggle() -> dict:
+    position = _xc330_position_from_reply(await _send_esp32_command("TOGGLE"))
+    return _xc330_status_from_position(position)
+
+
+@app.get("/api/xc330/status")
+async def api_xc330_status() -> dict:
+    position = _xc330_position_from_reply(await _send_esp32_command("STATUS"))
+    return _xc330_status_from_position(position)
 
 
 def _motor_connected(profile_name: str) -> bool:
