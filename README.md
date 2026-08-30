@@ -1,4 +1,4 @@
-# Life Switch
+# 💡 Life Switch
 
 Control physical switch in the real world, remotely.
 <br>
