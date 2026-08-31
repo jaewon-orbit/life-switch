@@ -21,9 +21,8 @@ constexpr int OPENRB_TX_PIN = 17;
 constexpr int OPENRB_RX_PIN = 18;
 constexpr uint32_t BAUDRATE = 115200;
 
-// Test 3-2: set CLOUDFLARE_TUNNEL_HOST in secrets.h to the hostname printed
-// by `bash scripts/start_quick_tunnel.sh` (without https:// or a path).
-constexpr uint16_t CLOUDFLARE_HTTPS_PORT = 443;
+// Set VPS_HOST, VPS_PORT, and VPS_USE_TLS in secrets.h. The ESP32 always
+// initiates this connection, so the home network needs no port forwarding.
 constexpr char WEBSOCKET_PATH[] = "/ws/esp32";
 
 // Test 2: send several motor toggles directly from the ESP32 after every boot.
@@ -32,7 +31,7 @@ constexpr uint8_t TOGGLE_TEST_COUNT = 3;
 constexpr uint32_t TOGGLE_TEST_INTERVAL_MS = 1000;
 
 HardwareSerial openrb(1);
-WebSocketsClient cloudflare_websocket;
+WebSocketsClient vps_websocket;
 
 char pc_command[32];
 size_t pc_command_length = 0;
@@ -59,11 +58,11 @@ void sendOpenrbCommand(const char *command);
 void onWebSocketEvent(WStype_t type, uint8_t *payload, size_t length) {
   switch (type) {
     case WStype_DISCONNECTED:
-      Serial.println("Cloudflare WebSocket disconnected");
+      Serial.println("VPS WebSocket disconnected; remote commands are unavailable");
       break;
 
     case WStype_CONNECTED:
-      Serial.println("Cloudflare WebSocket connected");
+      Serial.println("VPS WebSocket connected");
       break;
 
     case WStype_TEXT: {
@@ -72,24 +71,24 @@ void onWebSocketEvent(WStype_t type, uint8_t *payload, size_t length) {
       for (size_t index = 0; index < length; ++index) {
         message += static_cast<char>(payload[index]);
       }
-      Serial.print("Cloudflare -> ESP32: ");
+      Serial.print("VPS -> ESP32: ");
       Serial.println(message);
 
       if (message == "PING") {
-        cloudflare_websocket.sendTXT("PONG");
-        Serial.println("ESP32 -> Cloudflare: PONG");
+        vps_websocket.sendTXT("PONG");
+        Serial.println("ESP32 -> VPS: PONG");
       } else if (message == "ON" || message == "OFF" ||
                  message == "TOGGLE" || message == "STATUS" ||
                  message.startsWith("MOVE ")) {
         sendOpenrbCommand(message.c_str());
       } else {
-        Serial.println("Ignoring unknown Cloudflare command");
+        Serial.println("Ignoring unknown VPS command");
       }
       break;
     }
 
     case WStype_ERROR:
-      Serial.println("Cloudflare WebSocket error");
+      Serial.println("VPS WebSocket error");
       break;
 
     default:
@@ -98,11 +97,13 @@ void onWebSocketEvent(WStype_t type, uint8_t *payload, size_t length) {
 }
 
 void connectWebSocket() {
-  cloudflare_websocket.beginSSL(CLOUDFLARE_TUNNEL_HOST,
-                                CLOUDFLARE_HTTPS_PORT,
-                                WEBSOCKET_PATH);
-  cloudflare_websocket.onEvent(onWebSocketEvent);
-  cloudflare_websocket.setReconnectInterval(5000);
+#if VPS_USE_TLS
+  vps_websocket.beginSSL(VPS_HOST, VPS_PORT, WEBSOCKET_PATH);
+#else
+  vps_websocket.begin(VPS_HOST, VPS_PORT, WEBSOCKET_PATH);
+#endif
+  vps_websocket.onEvent(onWebSocketEvent);
+  vps_websocket.setReconnectInterval(5000);
 }
 
 void forwardPcCommand() {
@@ -141,11 +142,11 @@ void printOpenrbReply() {
     Serial.print("OpenRB -> ESP32: ");
     Serial.println(openrb_reply);
 
-    if (cloudflare_websocket.isConnected()) {
+    if (vps_websocket.isConnected()) {
       String message = "OPENRB ";
       message += openrb_reply;
-      cloudflare_websocket.sendTXT(message);
-      Serial.print("ESP32 -> Cloudflare: ");
+      vps_websocket.sendTXT(message);
+      Serial.print("ESP32 -> VPS: ");
       Serial.println(message);
     }
   }
@@ -194,7 +195,7 @@ void setup() {
 }
 
 void loop() {
-  cloudflare_websocket.loop();
+  vps_websocket.loop();
   readPcCommands();
   readOpenrbReplies();
 }

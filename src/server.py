@@ -1,11 +1,13 @@
 """FastAPI web server for remote motor control and ESP32 connectivity tests."""
 
 import asyncio
+import os
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -27,6 +29,18 @@ esp32_last_pong_at: str | None = None
 esp32_last_message: str | None = None
 esp32_command_lock = asyncio.Lock()
 esp32_command_reply: asyncio.Future[str] | None = None
+client_sockets: set[WebSocket] = set()
+
+# GitHub Pages is the production browser origin. Local origins make it possible
+# to develop the static files without weakening production origin checks.
+ALLOWED_BROWSER_ORIGINS = {
+    origin.strip()
+    for origin in os.environ.get(
+        "LIFE_SWITCH_ALLOWED_ORIGINS",
+        "https://jaewon-orbit.github.io,http://localhost:8000,http://127.0.0.1:8000",
+    ).split(",")
+    if origin.strip()
+}
 
 
 def _utc_now() -> str:
@@ -89,6 +103,34 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Life Switch", version="0.1.0", lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=sorted(ALLOWED_BROWSER_ORIGINS),
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
+)
+
+
+async def _broadcast_to_clients(message: dict) -> None:
+    """Send a state/event message to every connected browser."""
+    disconnected: list[WebSocket] = []
+    for client in tuple(client_sockets):
+        try:
+            await client.send_json(message)
+        except (RuntimeError, WebSocketDisconnect):
+            disconnected.append(client)
+    for client in disconnected:
+        client_sockets.discard(client)
+
+
+async def _send_client_event(websocket: WebSocket, event: str, **data: object) -> None:
+    await websocket.send_json({"type": event, **data})
+
+
+def _browser_origin_allowed(websocket: WebSocket) -> bool:
+    """Only browsers from configured origins may control the relay."""
+    return websocket.headers.get("origin") in ALLOWED_BROWSER_ORIGINS
 
 
 @app.get("/api/esp32/status")
@@ -109,6 +151,7 @@ async def esp32_websocket(websocket: WebSocket) -> None:
     await websocket.accept()
     esp32_socket = websocket
     print("ESP32 WebSocket connected")
+    await _broadcast_to_clients({"type": "esp32", "connected": True})
 
     async def send_pings() -> None:
         while True:
@@ -147,6 +190,63 @@ async def esp32_websocket(websocket: WebSocket) -> None:
             pass
         if esp32_socket is websocket:
             esp32_socket = None
+            await _broadcast_to_clients({"type": "esp32", "connected": False})
+
+
+@app.websocket("/ws/client")
+async def client_websocket(websocket: WebSocket) -> None:
+    """Receive browser commands and relay them over the ESP32's outbound socket.
+
+    Messages are JSON: ``{"type": "command", "command": "ON"}``.
+    The endpoint deliberately accepts only the four public switch commands.
+    """
+    if not _browser_origin_allowed(websocket):
+        await websocket.close(code=1008, reason="Origin is not allowed")
+        return
+
+    await websocket.accept()
+    client_sockets.add(websocket)
+    await _send_client_event(
+        websocket,
+        "connection",
+        browser_connected=True,
+        esp32_connected=esp32_socket is not None,
+    )
+
+    try:
+        while True:
+            payload = await websocket.receive_json()
+            if not isinstance(payload, dict) or payload.get("type") != "command":
+                await _send_client_event(websocket, "error", message="Expected a command message.")
+                continue
+
+            command = str(payload.get("command", "")).upper().strip()
+            if command not in {"ON", "OFF", "TOGGLE", "STATUS"}:
+                await _send_client_event(websocket, "error", message="Unsupported command.")
+                continue
+
+            if esp32_socket is None:
+                await _send_client_event(
+                    websocket, "error", message="ESP32 is not connected to the VPS."
+                )
+                continue
+
+            await _send_client_event(websocket, "command", command=command, status="sent")
+            try:
+                reply = await _send_esp32_command(command)
+                position = _xc330_position_from_reply(reply)
+                status = _xc330_status_from_position(position)
+            except HTTPException as exc:
+                await _send_client_event(websocket, "error", message=str(exc.detail))
+                continue
+
+            await _broadcast_to_clients(
+                {"type": "status", "command": command, "reply": reply, **status}
+            )
+    except WebSocketDisconnect:
+        pass
+    finally:
+        client_sockets.discard(websocket)
 
 
 async def _send_esp32_command(command: str, timeout: float = 15.0) -> str:

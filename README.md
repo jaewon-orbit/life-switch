@@ -83,6 +83,30 @@ Starting from the ground up is always the key to solving complex problems.
 <br>
 <br>
 
+## VPS WebSocket relay
+
+The standalone architecture is now:
+
+`GitHub Pages browser → /ws/client on VPS → existing outbound ESP32 /ws/esp32 → UART → OpenRB-150 → XC330`
+
+The ESP32 is always the connecting side and reconnects automatically; do not
+configure home-network port forwarding. Browser and ESP32 connection state are
+shown separately in the web UI. The existing HTTP API routes remain available
+for local troubleshooting, but GitHub Pages uses the WebSocket relay.
+
+For initial development, the web scripts use
+`ws://167.99.79.3:8000/ws/client`. Change the public `WS_URL` setting in
+`web/app.js` and `web/xc330_app.js` to
+`wss://YOUR_VPS_DOMAIN/ws/client` before publishing the HTTPS GitHub Pages
+site; an HTTPS page cannot open an insecure `ws://` connection.
+
+### VPS deployment
+
+The service and Nginx templates in [`deploy/`](./deploy/) use `/opt/life-switch`
+and a dedicated `life-switch` system user. They proxy both ordinary HTTP and
+WebSocket upgrade requests, so Nginx can later terminate HTTPS/WSS. See the
+deployment commands in the project handoff for the exact first-install steps.
+
 ## Test 3-1 — FastAPI through a Cloudflare Quick Tunnel
 
 Use this temporary setup to access the existing XC330 web UI from a phone on

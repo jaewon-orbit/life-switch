@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Life Switch</title>
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
   <main class="container">
@@ -25,8 +25,11 @@
     </div>
 
     <p id="message" class="message"></p>
+    <p id="connection-status" class="connection-status" aria-live="polite">
+      Browser: connecting to VPS · ESP32: unknown
+    </p>
   </main>
 
-  <script src="/app.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
