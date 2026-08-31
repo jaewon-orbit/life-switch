@@ -1,6 +1,5 @@
 // Set window.LIFE_SWITCH_WS_URL before this script to override the endpoint.
-// After TLS is configured, use: wss://YOUR_VPS_DOMAIN/ws/client
-const WS_URL = window.LIFE_SWITCH_WS_URL || "ws://167.99.79.3:8000/ws/client";
+const WS_URL = window.LIFE_SWITCH_WS_URL || "wss://switch.jaewon-orbit.com/ws/client";
 const RECONNECT_DELAY_MS = 3000;
 
 const stateEl = document.getElementById("state");
