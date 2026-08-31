@@ -94,11 +94,9 @@ configure home-network port forwarding. Browser and ESP32 connection state are
 shown separately in the web UI. The existing HTTP API routes remain available
 for local troubleshooting, but GitHub Pages uses the WebSocket relay.
 
-For initial development, the web scripts use
-`ws://167.99.79.3:8000/ws/client`. Change the public `WS_URL` setting in
-`web/app.js` and `web/xc330_app.js` to
-`wss://YOUR_VPS_DOMAIN/ws/client` before publishing the HTTPS GitHub Pages
-site; an HTTPS page cannot open an insecure `ws://` connection.
+The published web scripts connect to the relay at
+`wss://switch.jaewon-orbit.com/ws/client`. The HTTPS GitHub Pages site requires
+the secure `wss://` endpoint.
 
 ### VPS deployment
 

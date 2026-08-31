@@ -33,16 +33,17 @@ or port forwarding is required.
    ```
 
 2. In Arduino IDE's Library Manager, install **WebSockets** by Markus Sattler.
-3. Copy `secrets.h.example` to `secrets.h`. Set `WIFI_SSID` and
-   `WIFI_PASSWORD`. For the initial non-TLS VPS test, keep `VPS_HOST` as the
-   VPS IP, `VPS_PORT` as `8000`, and `VPS_USE_TLS` as `0`. Do not commit this
-   file. For production, set the DNS hostname, port `443`, and `VPS_USE_TLS`
-   to `1`.
+3. Copy `secrets.h.example` to `secrets.h`, set `WIFI_SSID` and
+   `WIFI_PASSWORD`, and do not commit this file. The sketch connects to
+   `wss://switch.jaewon-orbit.com/ws/esp32` on port `443`, verifies the
+   Let's Encrypt CA chain, and synchronizes its clock with NTP before starting
+   the TLS connection.
 4. Upload this sketch to the ESP32 and open its Serial Monitor at 115200 baud.
    It should log `VPS WebSocket connected`, followed by a `PING` and a
    `PONG` about every ten seconds.
-5. Visit `http://167.99.79.3:8000/api/esp32/status` to confirm a successful
-   connection. It returns `"connected": true` and a recent `"last_pong_at"`.
+5. Visit `https://switch.jaewon-orbit.com/api/esp32/status` to confirm a
+   successful connection. It returns `"connected": true` and a recent
+   `"last_pong_at"`.
 6. Open the browser UI configured for the VPS. It uses `/ws/client`, which
    relays its command to the ESP32 and waits for the OpenRB reply before
    updating the UI.
