@@ -113,30 +113,48 @@ the Cloudflare tunnel exposes it externally.
 
 ### Phase 1 — Motor Control
 
-* Developing in Linux (done)
-* Set up Python environment (done)
-* Explore DYNAMIXEL Wizard 2.0 and DYNAMIXEL SDK (done)
-* Explore U2D2 (USB to DYNAMIXEL, connecting a PC to a DYNAMIXEL motor) (done)
-* Control the motor with Python scripts (done)
-* Support different motors using motor profiles (done)
-* Switch from XM430 to XC330-M288T-T (done)
+* Developing in Linux
+* Set up Python environment 
+* Explore DYNAMIXEL Wizard 2.0 and DYNAMIXEL SDK 
+* Explore U2D2 (USB to DYNAMIXEL, connecting a PC to a DYNAMIXEL motor) 
+* Control the motor with Python scripts 
+* Support different motors using motor profiles 
+* Switch from XM430 to XC330-M288T-T 
 * Use current-based control instead of position control for improved safety
 
 ### Phase 2 — Remote Control
 
-* Create a web interface for PC and mobile (done)
-* Control the motor from a browser using FastAPI (done)
-* Access and control the motor remotely over LTE using Cloudflare Tunnel (done)
-* Revamp the UI to make switch control simpler and more intuitive (done)
+* Create a web interface for PC and mobile 
+* Control the motor from a browser using FastAPI 
+* Access and control the motor remotely over LTE using Cloudflare Tunnel 
+* Revamp the UI to make switch control simpler and more intuitive 
 
 ### Phase 3 — Standalone Control
 Control the switch independently from a PC
 
 * Use ESP32 + OpenRB-150 to control the XC330
 * Connect the switch to the internet through ESP32
+* Making VPS(Virtual Private Server) to use WebSocket
 * Control the switch remotely from a mobile device
 * Explore WebSocket for bidirectional communication
 * Using a custom domain for the remote connection
 
+
 ### User Requirements
 * You gotta enter your Wi-Fi SSID and password in secret.h file. This will make ESP32 connect to Wi-Fi.
+
+### Current Architecture
+
+```text
+📱 Phone
+   ↓ HTTPS
+GitHub Pages
+   ↓ JavaScript
+   ↓ WSS
+☁️ VPS / FastAPI
+   ↑ WSS
+ESP32
+   ↓ UART
+OpenRB-150
+   ↓
+XC330
