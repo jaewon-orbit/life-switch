@@ -17,37 +17,40 @@ UART1 TX/RX. They are not boot strapping pins, USB D-/D+ (GPIO19/20), UART0
 COM pins (GPIO43/44), or N16R8 OPI flash/PSRAM pins (GPIO26-32, GPIO33-37).
 Arduino-ESP32 routes `HardwareSerial(1)` to this pair through the GPIO matrix.
 
-## Test 3-2 — Cloudflare WebSocket PING/PONG
+## VPS WebSocket relay
 
-This sketch opens an outbound secure WebSocket connection to the FastAPI
+This sketch opens a persistent outbound WebSocket connection to the FastAPI
 endpoint at `/ws/esp32`. The server sends `PING`; the ESP32 replies with
-`PONG`. For Test 3-3, it also forwards `ON`, `OFF`, `TOGGLE`, `STATUS`, and
-`MOVE <position>` commands to the OpenRB over UART, then returns its replies.
+`PONG`. It reconnects every five seconds after a lost connection. Browser
+commands (`ON`, `OFF`, `TOGGLE`, and `STATUS`) are forwarded to the OpenRB over
+UART, and replies are returned to the VPS. No inbound home-network connection
+or port forwarding is required.
 
-1. Start FastAPI and the Quick Tunnel on the PC:
+1. For a development test, start FastAPI on the VPS:
 
    ```bash
-   python -m uvicorn src.server:app --host 127.0.0.1 --port 8000
-   bash scripts/start_quick_tunnel.sh
+   python -m uvicorn src.server:app --host 0.0.0.0 --port 8000
    ```
 
 2. In Arduino IDE's Library Manager, install **WebSockets** by Markus Sattler.
-3. Copy `secrets.h.example` to `secrets.h`. Set `WIFI_SSID`,
-   `WIFI_PASSWORD`, and `CLOUDFLARE_TUNNEL_HOST`. The host is the
-   `…trycloudflare.com` portion printed by the tunnel command—do not include
-   `https://` or `/ws/esp32`.
+3. Copy `secrets.h.example` to `secrets.h`, set `WIFI_SSID` and
+   `WIFI_PASSWORD`, and do not commit this file. The sketch connects to
+   `wss://switch.jaewon-orbit.com/ws/esp32` on port `443`, verifies the
+   Let's Encrypt CA chain, and synchronizes its clock with NTP before starting
+   the TLS connection.
 4. Upload this sketch to the ESP32 and open its Serial Monitor at 115200 baud.
-   It should log `Cloudflare WebSocket connected`, followed by a `PING` and a
+   It should log `VPS WebSocket connected`, followed by a `PING` and a
    `PONG` about every ten seconds.
-5. From the phone or PC, open
-   `https://YOUR-TUNNEL.trycloudflare.com/api/esp32/status`. A successful test
-   returns `"connected": true` and a recent `"last_pong_at"` timestamp.
-6. For Test 3-3, open `https://YOUR-TUNNEL.trycloudflare.com/xc330` from the
-   phone over LTE. The existing UI calls FastAPI, which relays its command to
-   the ESP32 and waits for the OpenRB reply before updating the UI.
+5. Visit `https://switch.jaewon-orbit.com/api/esp32/status` to confirm a
+   successful connection. It returns `"connected": true` and a recent
+   `"last_pong_at"`.
+6. Open the browser UI configured for the VPS. It uses `/ws/client`, which
+   relays its command to the ESP32 and waits for the OpenRB reply before
+   updating the UI.
 
-Each Quick Tunnel restart gives you a new hostname, so update
-`CLOUDFLARE_TUNNEL_HOST` and upload the ESP32 sketch again before reconnecting.
+If the ESP32 loses its VPS connection, it accepts no more remote commands. An
+already-started move is bounded by the OpenRB's 10-second move timeout and it
+releases motor torque when it completes or times out.
 
 ## ESP32 Arduino IDE settings
 

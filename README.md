@@ -83,6 +83,28 @@ Starting from the ground up is always the key to solving complex problems.
 <br>
 <br>
 
+## VPS WebSocket relay
+
+The standalone architecture is now:
+
+`GitHub Pages browser → /ws/client on VPS → existing outbound ESP32 /ws/esp32 → UART → OpenRB-150 → XC330`
+
+The ESP32 is always the connecting side and reconnects automatically; do not
+configure home-network port forwarding. Browser and ESP32 connection state are
+shown separately in the web UI. The existing HTTP API routes remain available
+for local troubleshooting, but GitHub Pages uses the WebSocket relay.
+
+The published web scripts connect to the relay at
+`wss://switch.jaewon-orbit.com/ws/client`. The HTTPS GitHub Pages site requires
+the secure `wss://` endpoint.
+
+### VPS deployment
+
+The service and Nginx templates in [`deploy/`](./deploy/) use `/opt/life-switch`
+and a dedicated `life-switch` system user. They proxy both ordinary HTTP and
+WebSocket upgrade requests, so Nginx can later terminate HTTPS/WSS. See the
+deployment commands in the project handoff for the exact first-install steps.
+
 ## Test 3-1 — FastAPI through a Cloudflare Quick Tunnel
 
 Use this temporary setup to access the existing XC330 web UI from a phone on
@@ -113,27 +135,48 @@ the Cloudflare tunnel exposes it externally.
 
 ### Phase 1 — Motor Control
 
-* Developing in Linux (done)
-* Set up Python environment (done)
-* Explore DYNAMIXEL Wizard 2.0 and DYNAMIXEL SDK (done)
-* Explore U2D2 (USB to DYNAMIXEL, connecting a PC to a DYNAMIXEL motor) (done)
-* Control the motor with Python scripts (done)
-* Support different motors using motor profiles (done)
-* Switch from XM430 to XC330-M288T-T (done)
+* Developing in Linux
+* Set up Python environment 
+* Explore DYNAMIXEL Wizard 2.0 and DYNAMIXEL SDK 
+* Explore U2D2 (USB to DYNAMIXEL, connecting a PC to a DYNAMIXEL motor) 
+* Control the motor with Python scripts 
+* Support different motors using motor profiles 
+* Switch from XM430 to XC330-M288T-T 
 * Use current-based control instead of position control for improved safety
 
 ### Phase 2 — Remote Control
 
-* Create a web interface for PC and mobile (done)
-* Control the motor from a browser using FastAPI (done)
-* Access and control the motor remotely over LTE using Cloudflare Tunnel (done)
-* Revamp the UI to make switch control simpler and more intuitive (done)
+* Create a web interface for PC and mobile 
+* Control the motor from a browser using FastAPI 
+* Access and control the motor remotely over LTE using Cloudflare Tunnel 
+* Revamp the UI to make switch control simpler and more intuitive 
 
 ### Phase 3 — Standalone Control
 Control the switch independently from a PC
 
 * Use ESP32 + OpenRB-150 to control the XC330
 * Connect the switch to the internet through ESP32
+* Making VPS(Virtual Private Server) to use WebSocket
 * Control the switch remotely from a mobile device
 * Explore WebSocket for bidirectional communication
 * Using a custom domain for the remote connection
+
+
+### User Requirements
+* You gotta enter your Wi-Fi SSID and password in secret.h file. This will make ESP32 connect to Wi-Fi.
+
+### Current Architecture
+
+```text
+📱 Phone
+   ↓ HTTPS
+GitHub Pages
+   ↓ JavaScript
+   ↓ WSS
+☁️ VPS / FastAPI
+   ↑ WSS
+ESP32
+   ↓ UART
+OpenRB-150
+   ↓
+XC330

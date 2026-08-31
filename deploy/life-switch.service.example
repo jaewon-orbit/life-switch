@@ -1,0 +1,17 @@
+[Unit]
+Description=Life Switch FastAPI WebSocket relay
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=life-switch
+Group=life-switch
+WorkingDirectory=/opt/life-switch
+Environment=LIFE_SWITCH_ALLOWED_ORIGINS=https://jaewon-orbit.github.io
+ExecStart=/opt/life-switch/.venv/bin/python -m uvicorn src.server:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
