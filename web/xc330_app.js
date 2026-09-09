@@ -1,6 +1,8 @@
 // Set window.LIFE_SWITCH_WS_URL before this script to override the endpoint.
 const WS_URL = window.LIFE_SWITCH_WS_URL || "wss://switch.jaewon-orbit.com/ws/client";
 const RECONNECT_DELAY_MS = 3000;
+const XC330_ON_POSITION = 1350;
+const XC330_OFF_POSITION = 1900;
 
 const stateEl = document.getElementById("state");
 const positionEl = document.getElementById("position");
@@ -26,12 +28,26 @@ function updateConnectionStatus(browserConnected, isError = false) {
   connectionEl.className = isError ? "connection-status error" : "connection-status";
 }
 
-function switchStatusMessage(data) {
-  return String(data.state).toLowerCase() === "on" ? "Switch is now ON" : "Switch is now OFF";
+function stateFromPosition(data) {
+  const position = Number(data.position);
+  const onPosition = Number(data.on_target ?? XC330_ON_POSITION);
+  const offPosition = Number(data.off_target ?? XC330_OFF_POSITION);
+
+  if (Number.isFinite(position) && Number.isFinite(onPosition) && Number.isFinite(offPosition)) {
+    return Math.abs(position - onPosition) < Math.abs(position - offPosition) ? "on" : "off";
+  }
+
+  return String(data.state).toLowerCase() === "on" ? "on" : "off";
+}
+
+function switchStatusMessage(state) {
+  return state === "on" ? "Switch is now ON" : "Switch is now OFF";
 }
 
 function updateStatus(data) {
-  const isOn = String(data.state).toLowerCase() === "on";
+  // The physical switch is ON near 1350 and OFF near 1900.  Use the present
+  // motor position so the UI stays correct even if a stale state is received.
+  const isOn = stateFromPosition(data) === "on";
   stateEl.textContent = isOn ? "ON" : "OFF";
   stateEl.className = `state ${isOn ? "on" : "off"}`;
   statusBox.className = `switch-card ${isOn ? "on" : "off"}`;
@@ -87,7 +103,7 @@ function connect() {
       setMessage(`Motor command ${event.command} sent to ESP32...`);
     } else if (event.type === "status") {
       updateStatus(event);
-      setMessage(switchStatusMessage(event));
+      setMessage(switchStatusMessage(stateFromPosition(event)));
       finishCommand();
     } else if (event.type === "error") {
       setMessage(event.message || "Unable to control XC330.", true);
