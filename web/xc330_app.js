@@ -10,6 +10,7 @@ const messageEl = document.getElementById("message");
 const statusBox = document.getElementById("status-box");
 const toggleSwitch = document.getElementById("toggle-switch");
 const connectionEl = document.getElementById("connection-status");
+const motorInfoEl = document.getElementById("motor-info");
 
 let isLoading = false;
 let socket = null;
@@ -30,11 +31,11 @@ function updateConnectionStatus(browserConnected, isError = false) {
 
 function stateFromPosition(data) {
   const position = Number(data.position);
-  const onPosition = Number(data.on_target ?? XC330_ON_POSITION);
-  const offPosition = Number(data.off_target ?? XC330_OFF_POSITION);
 
-  if (Number.isFinite(position) && Number.isFinite(onPosition) && Number.isFinite(offPosition)) {
-    return Math.abs(position - onPosition) < Math.abs(position - offPosition) ? "on" : "off";
+  if (Number.isFinite(position)) {
+    return Math.abs(position - XC330_ON_POSITION) < Math.abs(position - XC330_OFF_POSITION)
+      ? "on"
+      : "off";
   }
 
   return String(data.state).toLowerCase() === "on" ? "on" : "off";
@@ -45,14 +46,14 @@ function switchStatusMessage(state) {
 }
 
 function updateStatus(data) {
-  // The physical switch is ON near 1350 and OFF near 1900.  Use the present
-  // motor position so the UI stays correct even if a stale state is received.
+  // The physical switch is ON near 1350 and OFF near 1900.
   const isOn = stateFromPosition(data) === "on";
   stateEl.textContent = isOn ? "ON" : "OFF";
   stateEl.className = `state ${isOn ? "on" : "off"}`;
   statusBox.className = `switch-card ${isOn ? "on" : "off"}`;
   toggleSwitch.checked = isOn;
-  positionEl.textContent = `Current-based position ${data.position ?? "—"}`;
+  positionEl.textContent = switchStatusMessage(isOn ? "on" : "off");
+  motorInfoEl.textContent = `Motor: XC330 Servo Motor · Current-based position: ${data.position ?? "—"}`;
 }
 
 function finishCommand() {
@@ -103,7 +104,7 @@ function connect() {
       setMessage(`Motor command ${event.command} sent to ESP32...`);
     } else if (event.type === "status") {
       updateStatus(event);
-      setMessage(switchStatusMessage(stateFromPosition(event)));
+      setMessage("");
       finishCommand();
     } else if (event.type === "error") {
       setMessage(event.message || "Unable to control XC330.", true);
