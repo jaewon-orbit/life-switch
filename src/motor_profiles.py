@@ -57,9 +57,9 @@ MOTORS: dict[str, MotorProfile] = {
         device="/dev/ttyUSB0",
         baudrate=57600,
         motor_id=1,
-        # Constrain switch travel to 1350 <= position <= 1900.
-        off_position=1350,
-        on_position=1900,
+        # Constrain switch travel to 1350 <= position <= 1900 (ON is lower).
+        off_position=1900,
+        on_position=1350,
         addr_torque_enable=64,
         addr_goal_position=116,
         addr_present_position=132,

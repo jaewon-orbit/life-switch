@@ -31,11 +31,11 @@ constexpr uint32_t DXL_BAUDRATE = 57600;
 
 constexpr uint8_t DXL_ID = 1;  // XC330-M288-T motor ID
 // Keep every commanded position within the physical switch travel range.
-// Preserve the existing direction convention: ON is the larger position.
-constexpr int32_t OFF_POSITION = 1350;
-constexpr int32_t ON_POSITION = 1900;
-constexpr int32_t POSITION_MIN = OFF_POSITION;
-constexpr int32_t POSITION_MAX = ON_POSITION;
+// The physical switch is ON at the lower end of this range.
+constexpr int32_t ON_POSITION = 1350;
+constexpr int32_t OFF_POSITION = 1900;
+constexpr int32_t POSITION_MIN = ON_POSITION;
+constexpr int32_t POSITION_MAX = OFF_POSITION;
 constexpr int32_t POSITION_TOLERANCE = 20;
 constexpr uint32_t MOVE_TIMEOUT_MS = 10000;
 // Start conservatively. Increase with the CURRENT command only if the switch
