@@ -36,12 +36,19 @@ Protocol 2.0, motor ID `1`, and baudrate `57600`.
    python scripts/move_openrb_xc330.py --port /dev/ttyACM1
    ```
 
-   The script sends `MOVE`. The board makes a faster half-turn (2048 counts,
-   about 180 degrees), waits two seconds, returns, then disables torque and
-   DYNAMIXEL power. `DONE` confirms the movement completed.
+   The script sends `MOVE`. The board moves to the requested position and then
+   disables motor torque. `DONE` confirms the movement completed.
 
 If it prints a ping error, confirm the OpenRB red **DXL** LED lights during the
 test, then check cable seating, 5 V power, motor ID `1`, and baudrate `57600`.
+
+## Current-based position control
+
+The sketch uses the XC330's current-based position mode. It retains position
+control while setting a torque ceiling on each move. The default ceiling is
+400 mA. If the switch does not reliably actuate, test progressively up to
+700 mA by sending `CURRENT 400` through `CURRENT 700` over USB serial or from
+the ESP32. This setting resets to 400 mA when OpenRB restarts.
 
 ## ESP32 UART wiring test
 

@@ -36,7 +36,7 @@ function updateStatus(data) {
   stateEl.className = `state ${isOn ? "on" : "off"}`;
   statusBox.className = `switch-card ${isOn ? "on" : "off"}`;
   toggleSwitch.checked = isOn;
-  positionEl.textContent = `Position ${data.position ?? "—"}`;
+  positionEl.textContent = `Current-based position ${data.position ?? "—"}`;
 }
 
 function finishCommand() {
