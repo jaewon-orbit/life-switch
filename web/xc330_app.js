@@ -11,6 +11,7 @@ const messageEl = document.getElementById("message");
 const statusBox = document.getElementById("status-box");
 const toggleSwitch = document.getElementById("toggle-switch");
 const connectionEl = document.getElementById("connection-status");
+const currentPositionEl = document.getElementById("current-position");
 
 let isLoading = false;
 let socket = null;
@@ -52,6 +53,7 @@ function updateStatus(data) {
   statusBox.className = `switch-card ${isOn ? "on" : "off"}`;
   toggleSwitch.checked = isOn;
   positionEl.textContent = switchStatusMessage(isOn ? "on" : "off");
+  currentPositionEl.textContent = `Current based position: ${data.position ?? "—"}`;
 }
 
 function finishCommand() {
