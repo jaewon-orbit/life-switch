@@ -12,6 +12,7 @@
  *   OFF              -> move to OFF_POSITION
  *   TOGGLE           -> move to the opposite position
  *   MOVE <0-4095>    -> move to an explicit position
+ *   CURRENT <400-700> -> set the position-control torque limit in mA
  *   STATUS           -> STATUS <current-position>
  *
  * The motor torque is released after each completed move, so it makes one
@@ -29,12 +30,19 @@ constexpr uint32_t ESP32_BAUDRATE = 115200;
 constexpr uint32_t DXL_BAUDRATE = 57600;
 
 constexpr uint8_t DXL_ID = 1;  // XC330-M288-T motor ID
-constexpr int32_t OFF_POSITION = 400;
-constexpr int32_t ON_POSITION = 2448;  // 400 + 2048: approximately 180 degrees
-constexpr int32_t POSITION_MIN = 0;
-constexpr int32_t POSITION_MAX = 4095;
+// Keep every commanded position within the physical switch travel range.
+// The physical switch is ON at the lower end of this range.
+constexpr int32_t ON_POSITION = 1350;
+constexpr int32_t OFF_POSITION = 1900;
+constexpr int32_t POSITION_MIN = ON_POSITION;
+constexpr int32_t POSITION_MAX = OFF_POSITION;
 constexpr int32_t POSITION_TOLERANCE = 20;
 constexpr uint32_t MOVE_TIMEOUT_MS = 10000;
+// Start conservatively. Increase with the CURRENT command only if the switch
+// does not reliably actuate; the XC330 reports this value in approximately mA.
+constexpr int16_t DEFAULT_GOAL_CURRENT_MA = 400;
+constexpr int16_t MIN_GOAL_CURRENT_MA = 400;
+constexpr int16_t MAX_GOAL_CURRENT_MA = 700;
 
 constexpr int DXL_DIR_PIN = -1;
 
@@ -45,6 +53,7 @@ char command_buffer[32];
 size_t command_length = 0;
 char usb_command_buffer[32];
 size_t usb_command_length = 0;
+int16_t goal_current_ma = DEFAULT_GOAL_CURRENT_MA;
 
 void reply(const char *message) {
   Serial3.println(message);
@@ -78,7 +87,15 @@ bool moveTo(int32_t goal) {
   }
 
   dxl.torqueOn(DXL_ID);
+  // In current-based position mode this is a torque ceiling, not a command to
+  // continuously apply this current. Keep it below the motor Current Limit.
+  if (!dxl.setGoalCurrent(DXL_ID, goal_current_ma, UNIT_MILLI_AMPERE)) {
+    dxl.torqueOff(DXL_ID);
+    reply("ERROR SET_GOAL_CURRENT");
+    return false;
+  }
   if (!dxl.setGoalPosition(DXL_ID, goal)) {
+    dxl.torqueOff(DXL_ID);
     reply("ERROR SET_GOAL");
     return false;
   }
@@ -128,6 +145,19 @@ void handleCommand(char *command) {
       return;
     }
     moveTo(static_cast<int32_t>(goal));
+  } else if (strncmp(command, "CURRENT ", 8) == 0) {
+    char *end = nullptr;
+    const long current = strtol(command + 8, &end, 10);
+    while (*end == ' ' || *end == '\t') ++end;
+    if (end == command + 8 || *end != '\0' || current < MIN_GOAL_CURRENT_MA ||
+        current > MAX_GOAL_CURRENT_MA) {
+      reply("ERROR INVALID_CURRENT");
+      return;
+    }
+    goal_current_ma = static_cast<int16_t>(current);
+    char message[32];
+    snprintf(message, sizeof(message), "CURRENT %d", goal_current_ma);
+    reply(message);
   } else {
     reply("ERROR UNKNOWN_COMMAND");
   }
@@ -159,6 +189,17 @@ void setup() {
   if (!dxl.ping(DXL_ID)) {
     Serial.println("ERROR: XC330 not found");
     Serial3.println("ERROR MOTOR_NOT_FOUND");
+    return;
+  }
+
+  // Operating Mode is EEPROM. Torque must be off before changing it; avoid an
+  // unnecessary EEPROM write when the controller is already configured.
+  dxl.torqueOff(DXL_ID);
+  if (dxl.readControlTableItem(ControlTableItem::OPERATING_MODE, DXL_ID) !=
+          OP_CURRENT_BASED_POSITION &&
+      !dxl.setOperatingMode(DXL_ID, OP_CURRENT_BASED_POSITION)) {
+    Serial.println("ERROR: failed to set current-based position mode");
+    Serial3.println("ERROR SET_OPERATING_MODE");
     return;
   }
 

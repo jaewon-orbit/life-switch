@@ -22,7 +22,7 @@ function updateStatus(data) {
   const state = String(data.state).toLowerCase();
   stateEl.textContent = state.toUpperCase();
   stateEl.className = "state " + state;
-  positionEl.textContent = "Position: " + data.position;
+  positionEl.textContent = "Current-based position: " + data.position;
   statusBox.className = "status-box " + state;
 }
 function sendCommand(command) {

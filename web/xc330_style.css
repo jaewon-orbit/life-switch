@@ -345,7 +345,7 @@ body {
 
 
 .message {
-  min-height: 18px;
+  display: none;
 
   margin: 12px 0 0;
 
@@ -356,6 +356,11 @@ body {
 }
 
 
+.message.visible {
+  display: block;
+}
+
+
 .message.error {
   color: #c0392b;
 }
@@ -363,6 +368,13 @@ body {
 
 .connection-status {
   margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--secondary);
+}
+
+
+.motor-info {
+  margin: 4px 0 0;
   font-size: 12px;
   color: var(--secondary);
 }

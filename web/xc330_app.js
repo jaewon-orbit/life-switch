@@ -1,6 +1,9 @@
 // Set window.LIFE_SWITCH_WS_URL before this script to override the endpoint.
 const WS_URL = window.LIFE_SWITCH_WS_URL || "wss://switch.jaewon-orbit.com/ws/client";
 const RECONNECT_DELAY_MS = 3000;
+const XC330_ON_POSITION = 1350;
+const XC330_OFF_POSITION = 1900;
+const XC330_SWITCH_MIDPOINT = (XC330_ON_POSITION + XC330_OFF_POSITION) / 2;
 
 const stateEl = document.getElementById("state");
 const positionEl = document.getElementById("position");
@@ -8,6 +11,7 @@ const messageEl = document.getElementById("message");
 const statusBox = document.getElementById("status-box");
 const toggleSwitch = document.getElementById("toggle-switch");
 const connectionEl = document.getElementById("connection-status");
+const currentPositionEl = document.getElementById("current-position");
 
 let isLoading = false;
 let socket = null;
@@ -26,17 +30,30 @@ function updateConnectionStatus(browserConnected, isError = false) {
   connectionEl.className = isError ? "connection-status error" : "connection-status";
 }
 
-function switchStatusMessage(data) {
-  return String(data.state).toLowerCase() === "on" ? "Switch is now ON" : "Switch is now OFF";
+function stateFromPosition(data) {
+  const position = Number(data.position);
+
+  if (Number.isFinite(position)) {
+    // 1350 side is ON; 1900 side is OFF.
+    return position < XC330_SWITCH_MIDPOINT ? "on" : "off";
+  }
+
+  return String(data.state).toLowerCase() === "on" ? "on" : "off";
+}
+
+function switchStatusMessage(state) {
+  return state === "on" ? "Switch is now ON" : "Switch is now OFF";
 }
 
 function updateStatus(data) {
-  const isOn = String(data.state).toLowerCase() === "on";
+  // The physical switch is ON near 1350 and OFF near 1900.
+  const isOn = stateFromPosition(data) === "on";
   stateEl.textContent = isOn ? "ON" : "OFF";
   stateEl.className = `state ${isOn ? "on" : "off"}`;
   statusBox.className = `switch-card ${isOn ? "on" : "off"}`;
   toggleSwitch.checked = isOn;
-  positionEl.textContent = `Position ${data.position ?? "—"}`;
+  positionEl.textContent = switchStatusMessage(isOn ? "on" : "off");
+  currentPositionEl.textContent = `Current based position: ${data.position ?? "—"}`;
 }
 
 function finishCommand() {
@@ -60,7 +77,13 @@ function connect() {
   clearTimeout(reconnectTimer);
   updateConnectionStatus(false);
   socket = new WebSocket(WS_URL);
-  socket.addEventListener("open", () => updateConnectionStatus(true));
+  socket.addEventListener("open", () => {
+    updateConnectionStatus(true);
+    // Refresh the UI from the motor's actual present position after every
+    // page load or WebSocket reconnection instead of relying on the OFF HTML
+    // placeholder.
+    sendCommand("STATUS");
+  });
   socket.addEventListener("message", ({ data }) => {
     let event;
     try {
@@ -81,7 +104,7 @@ function connect() {
       setMessage(`Motor command ${event.command} sent to ESP32...`);
     } else if (event.type === "status") {
       updateStatus(event);
-      setMessage(switchStatusMessage(event));
+      setMessage("");
       finishCommand();
     } else if (event.type === "error") {
       setMessage(event.message || "Unable to control XC330.", true);
