@@ -3,6 +3,7 @@ const WS_URL = window.LIFE_SWITCH_WS_URL || "wss://switch.jaewon-orbit.com/ws/cl
 const RECONNECT_DELAY_MS = 3000;
 const XC330_ON_POSITION = 1350;
 const XC330_OFF_POSITION = 1900;
+const XC330_SWITCH_MIDPOINT = (XC330_ON_POSITION + XC330_OFF_POSITION) / 2;
 
 const stateEl = document.getElementById("state");
 const positionEl = document.getElementById("position");
@@ -10,7 +11,6 @@ const messageEl = document.getElementById("message");
 const statusBox = document.getElementById("status-box");
 const toggleSwitch = document.getElementById("toggle-switch");
 const connectionEl = document.getElementById("connection-status");
-const currentPositionEl = document.getElementById("current-position");
 
 let isLoading = false;
 let socket = null;
@@ -33,9 +33,8 @@ function stateFromPosition(data) {
   const position = Number(data.position);
 
   if (Number.isFinite(position)) {
-    return Math.abs(position - XC330_ON_POSITION) < Math.abs(position - XC330_OFF_POSITION)
-      ? "on"
-      : "off";
+    // 1350 side is ON; 1900 side is OFF.
+    return position < XC330_SWITCH_MIDPOINT ? "on" : "off";
   }
 
   return String(data.state).toLowerCase() === "on" ? "on" : "off";
@@ -53,7 +52,6 @@ function updateStatus(data) {
   statusBox.className = `switch-card ${isOn ? "on" : "off"}`;
   toggleSwitch.checked = isOn;
   positionEl.textContent = switchStatusMessage(isOn ? "on" : "off");
-  currentPositionEl.textContent = `Current based position: ${data.position ?? "—"}`;
 }
 
 function finishCommand() {
