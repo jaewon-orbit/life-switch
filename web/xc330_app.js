@@ -60,7 +60,13 @@ function connect() {
   clearTimeout(reconnectTimer);
   updateConnectionStatus(false);
   socket = new WebSocket(WS_URL);
-  socket.addEventListener("open", () => updateConnectionStatus(true));
+  socket.addEventListener("open", () => {
+    updateConnectionStatus(true);
+    // Refresh the UI from the motor's actual present position after every
+    // page load or WebSocket reconnection instead of relying on the OFF HTML
+    // placeholder.
+    sendCommand("STATUS");
+  });
   socket.addEventListener("message", ({ data }) => {
     let event;
     try {
