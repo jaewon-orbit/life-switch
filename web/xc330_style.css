@@ -345,7 +345,7 @@ body {
 
 
 .message {
-  min-height: 18px;
+  display: none;
 
   margin: 12px 0 0;
 
@@ -353,6 +353,11 @@ body {
   font-weight: 500;
 
   color: var(--secondary);
+}
+
+
+.message.visible {
+  display: block;
 }
 
 
