@@ -14,7 +14,7 @@ Control physical switch in the real world, remotely.
 
 Lying in my bed, I didn't want to get up just to turn off the lamp. I also wanted to be able to turn it off from outside my home, in case I forgot to switch it off before leaving.
 
-There are still many devices that require physical interaction.
+There are still many devices that require physical interaction.<br>
 Building this project as a starting point for remotely controlling the analog switches and buttons in our homes.
 
 <br>
