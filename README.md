@@ -37,7 +37,7 @@ Life Switch takes a different approach: a motor-based module attached to the out
 
 | Layer | Tech |
 |---|---|
-| Motor | DYNAMIXEL XC330-M288-T |
+| Motor | DYNAMIXEL XC330-M288-T<br><img src="./docs/images/xc330_motor.png" width="140" alt="DYNAMIXEL XC330-M288-T"> |
 | Motor controller | OpenRB-150 |
 | Microcontroller | ESP32 (Wi-Fi) |
 | Backend | FastAPI + WebSocket |
