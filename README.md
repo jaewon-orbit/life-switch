@@ -15,9 +15,7 @@ Control physical switch in the real world, remotely.
 Lying in my bed, I didn't want to get up just to turn off the lamp. I also wanted to be able to turn it off from outside my home, in case I forgot to switch it off before leaving.
 
 There are still many devices that require physical interaction.
-Long story short, I needed it. Hoped it'd be easy to make.
-
-Right now, Life Switch remotely controls the physical switch of my IKEA TÅGARP floor lamp.
+Building this project as a starting point for remotely controlling the analog switches and buttons in our homes.
 
 <br>
 
@@ -45,7 +43,7 @@ Life Switch takes a different approach: a motor-based module attached to the out
 | Backend | FastAPI + WebSocket |
 | Frontend | GitHub Pages (static) |
 | Relay server | VPS + custom domain (`switch.jaewon-orbit.com`) |
-| 3D design | Autodesk Fusion 360 |
+| 3D design | Autodesk Fusion |
 | Dev/testing tunnel | Cloudflare Tunnel |
 
 <br>
@@ -76,14 +74,26 @@ Status isn't polled continuously — it's only requested when needed: on page re
 
 ## Hardware Assembly
 
-1. Designed a teardrop-shaped horn in Fusion 360 to mount on the XC330's output shaft, secured with M2×6mm screws.
-2. Attached the motor + horn next to the lamp's inline rocker switch with cable ties, using the horn to physically toggle it.
-3. Built a housing for the ESP32 and OpenRB-150 and mounted it on the lamp's pole.
+1. Right now, Life Switch remotely controls the physical switch of my IKEA TÅGARP floor lamp.
+2. And this is the lamp's inline rocker switch.
 
 <div align="center">
-<img src="./docs/images/horn_design.png" width="220" alt="3D-printed horn design in Fusion 360">
-<img src="./docs/images/motor_mounted.jpg" width="220" alt="Motor and horn mounted on the lamp switch">
+<img src="./docs/images/lamp.jpg" width="120" alt="TÅGARP floor lamp">
+<img src="./docs/images/rocker_switch_1.jpg" width="120" alt="Lamp's inline rocker switch">
+<img src="./docs/images/rocker_switch_2.jpg" width="120" alt="Lamp's inline rocker switch">
 </div>
+
+3. Designed a teardrop-shaped horn in Autodesk Fusion to mount on the XC330's output shaft, secured with M2×6mm screws.
+
+<div align="center">
+<img src="./docs/images/horn_design_1.png" width="140" alt="Horn design in Autodesk Fusion">
+<img src="./docs/images/horn_design_2.png" width="140" alt="Horn design in Autodesk Fusion">
+</div>
+
+<!-- gif: horn 3D-printed, assembled onto the motor, and tested -->
+
+4. Attached the motor + horn next to the lamp's inline rocker switch with cable ties, using the horn to physically toggle it.
+5. Cut and taped together a simple plastic enclosure for the ESP32 and OpenRB-150, and attached it to the lamp's pole.
 
 <br>
 
@@ -109,7 +119,9 @@ Status isn't polled continuously — it's only requested when needed: on page re
 - **Status sync on refresh** — the browser now requests the real motor position (`STATUS`) whenever the WebSocket connects or a toggle is pressed, instead of relying on a stored default.
 - **UI, round 2** — after adding current-based position control and status sync, simplified the UI further to show only what the user actually needs.
 
-  <!-- photo to be added -->
+  | Before | After |
+  |:---:|:---:|
+  | <img src="./docs/images/ui-v2-before.jpg" width="140"> | <img src="./docs/images/ui-v2-after.jpg" width="140"> |
 
 <br>
 
@@ -153,7 +165,7 @@ bash scripts/start_quick_tunnel.sh
 - [x] Sync switch status with the real motor position on refresh
 
 ### Phase 4 — Physical Integration
-- [x] Design a 3D-printed horn for the XC330 (Fusion 360)
+- [x] Design a 3D-printed horn for the XC330 (Autodesk Fusion)
 - [x] Mount motor + horn on the lamp's inline rocker switch
 - [x] Build an ESP32 + OpenRB housing, attach to the lamp pole
 - [x] Simplify the UI around current-based position + status sync
