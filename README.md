@@ -77,14 +77,14 @@ Status isn't polled continuously — it's only requested when needed: on page re
 1. Right now, Life Switch remotely controls the physical switch of my IKEA TÅGARP floor lamp.
 
 <div align="center">
-<img src="./docs/images/lamp.jpg" width="120" alt="TÅGARP floor lamp">
+<img src="./docs/images/lamp.jpg" width="80" alt="TÅGARP floor lamp">
 </div>
 <br>
 2. And this is the lamp's inline rocker switch.
 
 <div align="center">
 <img src="./docs/images/rocker_switch_1.jpg" width="120" alt="Lamp's inline rocker switch">
-<img src="./docs/images/rocker_switch_2.jpg" width="120" alt="Lamp's inline rocker switch">
+<img src="./docs/images/rocker_switch_2.jpg" width="75" alt="Lamp's inline rocker switch">
 </div>
 <br>
 3. Removed the stock plain horn from the XC330's output disc, and mounted ROBOTIS official XC330 horn (HNX330-N102), onto the output shaft with its center screw.<br>
@@ -96,8 +96,8 @@ Status isn't polled continuously — it's only requested when needed: on page re
 4. Designed a teardrop-shaped horn in Autodesk Fusion, and mounted it onto the HNX330-N102 with M2×6mm screws.<br>
 <a href="./docs/models/teardrop_horn.stp.zip" download>📦 Download Teardrop-Shaped Horn STP file</a>
 <div align="center">
-<img src="./docs/images/tear_drop_3d_model_1.png" width="140" alt="Teardrop-shaped design in Autodesk Fusion">
-<img src="./docs/images/tear_drop_3d_model_2.png" width="140" alt="Teardrop-shaped design in Autodesk Fusion">
+<img src="./docs/images/tear_drop_3d_model_1.png" width="295" alt="Teardrop-shaped design in Autodesk Fusion">
+<img src="./docs/images/tear_drop_3d_model_2.png" width="200" alt="Teardrop-shaped design in Autodesk Fusion">
 <a href="https://www.youtube.com/watch?v=VIDEO_ID"><img src="https://img.youtube.com/vi/VIDEO_ID/0.jpg" width="140" alt="Horn print, assembly, and test video"></a>
 </div>
 <br> 
@@ -109,7 +109,7 @@ Status isn't polled continuously — it's only requested when needed: on page re
 6. Put the ESP32 and OpenRB-150 in a small basket, and cable-tied the basket to the lamp's pole.
 <div align="center">
 <img src="./docs/images/esp32_openrb_basket.jpg" width="140" alt="ESP32 and OpenRB-150 inside the small basket">
-<img src="./docs/images/lamp_full_setup.jpg" width="140" alt="Floor lamp with the basket tied to the pole">
+<img src="./docs/images/lamp_full_setup.jpg" width="200" alt="Floor lamp with the basket tied to the pole">
 </div>
 
 <br>
