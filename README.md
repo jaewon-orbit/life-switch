@@ -6,7 +6,7 @@ Control physical switch in the real world, remotely.
 
 ## 🎥 Demo
 
-<!-- video link / gif to be added -->
+[![Demo video](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
 
 <br>
 
@@ -75,25 +75,38 @@ Status isn't polled continuously — it's only requested when needed: on page re
 ## Hardware Assembly
 
 1. Right now, Life Switch remotely controls the physical switch of my IKEA TÅGARP floor lamp.
-2. And this is the lamp's inline rocker switch.
 
 <div align="center">
 <img src="./docs/images/lamp.jpg" width="120" alt="TÅGARP floor lamp">
+</div>
+   
+2. And this is the lamp's inline rocker switch.
+
+<div align="center">
 <img src="./docs/images/rocker_switch_1.jpg" width="120" alt="Lamp's inline rocker switch">
 <img src="./docs/images/rocker_switch_2.jpg" width="120" alt="Lamp's inline rocker switch">
 </div>
 
-3. Designed a teardrop-shaped horn in Autodesk Fusion to mount on the XC330's output shaft, secured with M2×6mm screws.
-
+3. Removed the stock plain horn from the XC330's output disc, and mounted Robotis's official XC330 horn, the HNX330-N102, onto the output shaft with its center screw.
+<img src="./docs/images/hnx330_n102.jpg" width="160" alt="HNX330-N102 horn mounted on the XC330 output shaft">
+[Download XC330 horn(HNX330-N102) STP file](./docs/models/XL_XC_330_HORN.stp)
+ 
+4. Designed a teardrop-shaped horn in Autodesk Fusion, and mounted it onto the HNX330-N102 with M2×6mm screws.
 <div align="center">
-<img src="./docs/images/horn_design_1.png" width="140" alt="Horn design in Autodesk Fusion">
-<img src="./docs/images/horn_design_2.png" width="140" alt="Horn design in Autodesk Fusion">
+<img src="./docs/images/tear_drop_3d_model_1.png" width="140" alt="Teardrop-shaped design in Autodesk Fusion">
+<img src="./docs/images/tear_drop_3d_model_2.png" width="140" alt="Teardrop-shaped design in Autodesk Fusion">
+<a href="https://www.youtube.com/watch?v=VIDEO_ID"><img src="https://img.youtube.com/vi/VIDEO_ID/0.jpg" width="140" alt="Horn print, assembly, and test video"></a>
 </div>
-
-<!-- gif: horn 3D-printed, assembled onto the motor, and tested -->
-
-4. Attached the motor + horn next to the lamp's inline rocker switch with cable ties, using the horn to physically toggle it.
-5. Make enclosure for the ESP32 and OpenRB-150, and attached it to the lamp's pole.
+[Download teardrop-shaped horn STP file](./docs/models/teardrop_horn.stp)
+ 
+5. Attached the motor + horn next to the lamp's inline rocker switch with cable ties, using the horn to physically toggle it.
+<img src="./docs/images/motor_horn_attached.jpg" width="160" alt="Motor and horn attached next to the rocker switch">
+ 
+6. Put the ESP32 and OpenRB-150 in a small basket, and cable-tied the basket to the lamp's pole.
+<div align="center">
+<img src="./docs/images/esp32_openrb_basket.jpg" width="140" alt="ESP32 and OpenRB-150 inside the small basket">
+<img src="./docs/images/lamp_full_setup.jpg" width="140" alt="Floor lamp with the basket tied to the pole">
+</div>
 
 <br>
 
@@ -150,7 +163,7 @@ bash scripts/start_quick_tunnel.sh
 ### Phase 1 — Motor Control
 - [x] Set up Python environment, DYNAMIXEL Wizard 2.0 / SDK, U2D2
 - [x] Control the motor with Python scripts, using motor profiles
-- [x] Switch from XM430 to XC330-M288T-T
+- [x] Switch from XM430 to XC330-M288T
 - [x] Apply current-based position control to protect the motor and horn
 
 ### Phase 2 — Remote Control
