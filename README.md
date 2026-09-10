@@ -138,7 +138,7 @@ Status isn't polled continuously — it's only requested when needed: on page re
 
   | Before | After |
   |:---:|:---:|
-  | <img src="./docs/images/ui-v2-before.jpg" width="140"> | <img src="./docs/images/ui-v2-after.jpg" width="140"> |
+  | <img src="./docs/images/ui-v2-before.jpg" width="400"> | <img src="./docs/images/ui-v2-after.jpg" width="400"> |
 
 <br>
 
