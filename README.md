@@ -37,7 +37,7 @@ Life Switch takes a different approach: a motor-based module attached to the out
 
 | Layer | Tech |
 |---|---|
-| Motor | DYNAMIXEL XC330-M288-T<br><img src="./docs/images/xc330_motor.png" width="140" alt="DYNAMIXEL XC330-M288-T"> |
+| Motor | DYNAMIXEL XC330-M288-T<br><img src="./docs/images/xc330_motor.png" width="80" alt="DYNAMIXEL XC330-M288-T"> |
 | Motor controller | OpenRB-150 |
 | Microcontroller | ESP32 (Wi-Fi) |
 | Backend | FastAPI + WebSocket |
@@ -129,7 +129,7 @@ Status isn't polled continuously — it's only requested when needed: on page re
 
 - **Standalone control** — connected ESP32 + OpenRB-150 to control the motor without a PC.
 
-  <img src="./docs/images/esp32_openrb_motor.jpg" width="180" alt="ESP32 and OpenRB motor control setup">
+  <img src="./docs/images/esp32_openrb_motor.jpg" width="300" alt="ESP32 and OpenRB motor control setup">
 
 - **VPS WebSocket relay** — deployed a VPS to relay WebSocket traffic between GitHub Pages and ESP32, avoiding port forwarding.
 - **Current-based position control** — switched from position control to current-based position control to protect the motor and the 3D-printed horn.
