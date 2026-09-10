@@ -87,20 +87,24 @@ Status isn't polled continuously — it's only requested when needed: on page re
 <img src="./docs/images/rocker_switch_2.jpg" width="120" alt="Lamp's inline rocker switch">
 </div>
 
-3. Removed the stock plain horn from the XC330's output disc, and mounted Robotis's official XC330 horn, the HNX330-N102, onto the output shaft with its center screw.
-<img src="./docs/images/hnx330_n102.jpg" width="160" alt="HNX330-N102 horn mounted on the XC330 output shaft">
+3. Removed the stock plain horn from the XC330's output disc, and mounted ROBOTIS official XC330 horn, the HNX330-N102, onto the output shaft with its center screw.
 [📦 Download XC330 Horn (HNX330-N102) STP](./docs/models/XL_XC_330_HORN.stp)
+<div align="center">
+<img src="./docs/images/hnx330_n102.jpg" width="160" alt="HNX330-N102 horn mounted on the XC330 output shaft">
+</div>
  
 4. Designed a teardrop-shaped horn in Autodesk Fusion, and mounted it onto the HNX330-N102 with M2×6mm screws.
+[📦 Download Teardrop-Shaped Horn STP](./docs/models/teardrop_horn.stp)
 <div align="center">
 <img src="./docs/images/tear_drop_3d_model_1.png" width="140" alt="Teardrop-shaped design in Autodesk Fusion">
 <img src="./docs/images/tear_drop_3d_model_2.png" width="140" alt="Teardrop-shaped design in Autodesk Fusion">
 <a href="https://www.youtube.com/watch?v=VIDEO_ID"><img src="https://img.youtube.com/vi/VIDEO_ID/0.jpg" width="140" alt="Horn print, assembly, and test video"></a>
 </div>
-[📦 Download Teardrop-Shaped Horn STP](./docs/models/teardrop_horn.stp)
  
 5. Attached the motor + horn next to the lamp's inline rocker switch with cable ties, using the horn to physically toggle it.
+<div align="center">
 <img src="./docs/images/motor_horn_attached.jpg" width="160" alt="Motor and horn attached next to the rocker switch">
+</div>
  
 6. Put the ESP32 and OpenRB-150 in a small basket, and cable-tied the basket to the lamp's pole.
 <div align="center">
