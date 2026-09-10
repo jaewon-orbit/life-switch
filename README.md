@@ -87,7 +87,7 @@ Status isn't polled continuously — it's only requested when needed: on page re
 <img src="./docs/images/rocker_switch_2.jpg" width="120" alt="Lamp's inline rocker switch">
 </div>
 
-3. Removed the stock plain horn from the XC330's output disc, and mounted ROBOTIS official XC330 horn, the HNX330-N102, onto the output shaft with its center screw.<br>
+3. Removed the stock plain horn from the XC330's output disc, and mounted ROBOTIS official XC330 horn (HNX330-N102), onto the output shaft with its center screw.<br>
 [📦 Download XC330 Horn (HNX330-N102) STP file](./docs/models/XL_XC_330_HORN.stp)
 <div align="center">
 <img src="./docs/images/hnx330_n102.jpg" width="160" alt="HNX330-N102 horn mounted on the XC330 output shaft">
