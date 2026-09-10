@@ -93,7 +93,7 @@ Status isn't polled continuously — it's only requested when needed: on page re
 <!-- gif: horn 3D-printed, assembled onto the motor, and tested -->
 
 4. Attached the motor + horn next to the lamp's inline rocker switch with cable ties, using the horn to physically toggle it.
-5. Cut and taped together a simple plastic enclosure for the ESP32 and OpenRB-150, and attached it to the lamp's pole.
+5. Make enclosure for the ESP32 and OpenRB-150, and attached it to the lamp's pole.
 
 <br>
 
