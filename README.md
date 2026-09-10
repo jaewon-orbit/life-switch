@@ -88,13 +88,13 @@ Status isn't polled continuously — it's only requested when needed: on page re
 </div>
 <br>
 3. Removed the stock plain horn from the XC330's output disc, and mounted ROBOTIS official XC330 horn (HNX330-N102), onto the output shaft with its center screw.<br>
-[📦 Download XC330 Horn (HNX330-N102) STP file](./docs/models/XL_XC_330_HORN.stp)
+<a href="./docs/models/XL_XC_330_HORN.stp" download>📦 Download XC330 Horn (HNX330-N102) STP file</a>
 <div align="center">
 <img src="./docs/images/hnx330_n102.jpg" width="160" alt="HNX330-N102 horn mounted on the XC330 output shaft">
 </div>
 <br> 
 4. Designed a teardrop-shaped horn in Autodesk Fusion, and mounted it onto the HNX330-N102 with M2×6mm screws.<br>
-[📦 Download Teardrop-Shaped Horn STP file](./docs/models/teardrop_horn.stp)
+<a href="./docs/models/teardrop_horn.stp" download>📦 Download Teardrop-Shaped Horn STP file</a>
 <div align="center">
 <img src="./docs/images/tear_drop_3d_model_1.png" width="140" alt="Teardrop-shaped design in Autodesk Fusion">
 <img src="./docs/images/tear_drop_3d_model_2.png" width="140" alt="Teardrop-shaped design in Autodesk Fusion">
