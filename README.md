@@ -1,182 +1,165 @@
 # 💡 Life Switch
 
 Control physical switch in the real world, remotely.
-<br>
-<br>
-# Why Life Switch?
-During a summer heat wave, I wanted to turn on the air conditioner before getting home. <br>
-Another time, I left home and suddenly wondered, "Did I turn off the air conditioner?"
-<br><br>
-There's many devices still require physical interaction.
-<br>
-Long story short, I need it.
-Hope it’s easy to make.
-<br>
-<br>
-# now now now Latest Updates
-
-### 1. Remote Control over LTE
-
-Successfully controlled the motor remotely from a mobile browser over LTE using Cloudflare Tunnel.
-
-<img src="./docs/images/motor_move_LTE.png" width="200" alt="Motor controlled remotely over LTE">
-
-### 2. Motor Change: XM430 → XC330
-
-Changed the motor from XM430 to XC330-M288T-T, which is smaller and more suitable for the physical switch prototype.
-
-The motor control code was also refactored to use motor profiles instead of motor-specific rotation values. This allows different motors to be tested without changing the core control logic.
-
-### 3. UI Revamp
-
-Redesigned the browser UI to make the remote switch control simpler and more intuitive.
-
-| Before | After |
-|:---:|:---:|
-| <img src="./docs/images/ui-before.jpg" width="200"> | <img src="./docs/images/ui-revamp.jpg" width="200"> |
-
-### 4. Next? Standalone Control
-
-The next goal is to control the switch independently from a PC.
-
-ESP32 + OpenRB-150 will be used to connect the motor to the internet and enable remote control from a mobile device.
-
-Planned architecture:
-
-Mobile Browser
-→ Internet / LTE
-→ ESP32
-→ OpenRB-150
-→ XC330
-→ Physical Switch
-
-WebSocket is being considered for bidirectional communication, with a custom domain potentially used for the remote connection.
-
-Also, I will gonna use current-based control instead of position control to improve safety.
-
-### 5. OpenRB-150 XC330 control (current test setup)
-
-OpenRB-150 now controls the XC330-M288-T directly. The firmware in
-[`firmware/openrb_xc330/`](./firmware/openrb_xc330/) receives commands over its
-USB connection and runs a 180° return trip at the configured speed; it turns
-torque and DYNAMIXEL power off when finished.
-
-
-run this scripts to move the motor with OpenRB
-(my port is (/dev/ttyACM0))
-
-```bash
-python scripts/move_openrb_xc330.py --port /dev/ttyACM0
-```
-
-this sends `MOVE` to the OpenRB. Existing
-[`scripts/move_motor.py`](./scripts/move_motor.py) remains the separate U2D2
-motor-control script.
-
-### 6. ESP32 Control
-
-Successfully controlled the robot with ESP32, using OpenRB as the motor control interface.
-Starting from the ground up is always the key to solving complex problems.
-
-<img src="./docs/images/esp32_openrb_motor.jpg" width="400" alt="ESP32 and OpenRB motor control setup">
 
 <br>
+
+## 🎥 Demo
+
+<!-- video link / gif to be added -->
+
 <br>
 
-## VPS WebSocket relay
+## Why Life Switch?
 
-The standalone architecture is now:
+Lying in my bed, I didn't want to get up just to turn off the lamp. I also wanted to be able to turn it off from outside my home, in case I forgot to switch it off before leaving.
 
-`GitHub Pages browser → /ws/client on VPS → existing outbound ESP32 /ws/esp32 → UART → OpenRB-150 → XC330`
+There are still many devices that require physical interaction.
+Long story short, I needed it. Hoped it'd be easy to make.
 
-The ESP32 is always the connecting side and reconnects automatically; do not
-configure home-network port forwarding. Browser and ESP32 connection state are
-shown separately in the web UI. The existing HTTP API routes remain available
-for local troubleshooting, but GitHub Pages uses the WebSocket relay.
+Right now, Life Switch remotely controls the physical switch of my IKEA TÅGARP floor lamp.
 
-The published web scripts connect to the relay at
-`wss://switch.jaewon-orbit.com/ws/client`. The HTTPS GitHub Pages site requires
-the secure `wss://` endpoint.
+<br>
 
-### VPS deployment
+## Approach
 
-The service and Nginx templates in [`deploy/`](./deploy/) use `/opt/life-switch`
-and a dedicated `life-switch` system user. They proxy both ordinary HTTP and
-WebSocket upgrade requests, so Nginx can later terminate HTTPS/WSS. See the
-deployment commands in the project handoff for the exact first-install steps.
+Most existing ways to control lighting remotely fall into three categories:
 
-## Test 3-1 — FastAPI through a Cloudflare Quick Tunnel
+- Cutting wires and rewiring the switch into a smart switch
+- Cutting external power with a smart plug
+- Replacing the bulb with a smart bulb
 
-Use this temporary setup to access the existing XC330 web UI from a phone on
-LTE. It does not need a custom domain or a Cloudflare account.
+All three share the same limitation — they can't use the lamp's original physical switch, and they carry wiring risk or require modifying/replacing the product.
 
-In the first terminal, start the existing FastAPI server:
+Life Switch takes a different approach: a motor-based module attached to the outside of the switch, operating the existing physical switch directly — no rewiring, no bulb replacement.
 
-```bash
-python -m uvicorn src.server:app --host 127.0.0.1 --port 8000
-```
+<br>
 
-In a second terminal, create the Quick Tunnel:
+## Tech Stack
 
-```bash
-bash scripts/start_quick_tunnel.sh
-```
+| Layer | Tech |
+|---|---|
+| Motor | DYNAMIXEL XC330-M288-T |
+| Motor controller | OpenRB-150 |
+| Microcontroller | ESP32 (Wi-Fi) |
+| Backend | FastAPI + WebSocket |
+| Frontend | GitHub Pages (static) |
+| Relay server | VPS + custom domain (`switch.jaewon-orbit.com`) |
+| 3D design | Autodesk Fusion 360 |
+| Dev/testing tunnel | Cloudflare Tunnel |
 
-`cloudflared` prints an `https://…trycloudflare.com` URL. Open that exact URL
-on the phone while Wi-Fi is turned off. The root URL redirects to `/xc330`
-when the XC330 is connected; otherwise open `https://…trycloudflare.com/xc330`.
+<br>
 
-The Quick Tunnel URL is random and stops working as soon as `cloudflared` is
-stopped. Treat it like a temporary public remote-control link: share it only
-with people you trust. The FastAPI server stays bound to `127.0.0.1`, so only
-the Cloudflare tunnel exposes it externally.
-
-# Roadmap
-
-### Phase 1 — Motor Control
-
-* Developing in Linux
-* Set up Python environment 
-* Explore DYNAMIXEL Wizard 2.0 and DYNAMIXEL SDK 
-* Explore U2D2 (USB to DYNAMIXEL, connecting a PC to a DYNAMIXEL motor) 
-* Control the motor with Python scripts 
-* Support different motors using motor profiles 
-* Switch from XM430 to XC330-M288T-T 
-* Use current-based control instead of position control for improved safety
-
-### Phase 2 — Remote Control
-
-* Create a web interface for PC and mobile 
-* Control the motor from a browser using FastAPI 
-* Access and control the motor remotely over LTE using Cloudflare Tunnel 
-* Revamp the UI to make switch control simpler and more intuitive 
-
-### Phase 3 — Standalone Control
-Control the switch independently from a PC
-
-* Use ESP32 + OpenRB-150 to control the XC330
-* Connect the switch to the internet through ESP32
-* Making VPS(Virtual Private Server) to use WebSocket
-* Control the switch remotely from a mobile device
-* Explore WebSocket for bidirectional communication
-* Using a custom domain for the remote connection
-
-
-### User Requirements
-* You gotta enter your Wi-Fi SSID and password in secret.h file. This will make ESP32 connect to Wi-Fi.
-
-### Current Architecture
+## Architecture
 
 ```text
 📱 Phone
    ↓ HTTPS
 GitHub Pages
-   ↓ JavaScript
    ↓ WSS
-☁️ VPS / FastAPI
+☁️ VPS (FastAPI relay)
    ↑ WSS
 ESP32
    ↓ UART
 OpenRB-150
    ↓
 XC330
+```
+
+**Why a VPS?**
+ESP32 sits behind a home router and can't accept inbound connections. Instead, it connects *outbound* to the VPS, which relays messages between the browser and ESP32 — no port forwarding needed.
+
+**Status sync**
+Status isn't polled continuously — it's only requested when needed: on page refresh (via the WebSocket `open` event) or after a toggle command. The server reads the motor's Present Position and compares it against the two known endpoints (`1350` ≈ ON, `1900` ≈ OFF) to decide which state to show.
+
+<br>
+
+## Hardware Assembly
+
+1. Designed a teardrop-shaped horn in Fusion 360 to mount on the XC330's output shaft, secured with M2×6mm screws.
+2. Attached the motor + horn next to the lamp's inline rocker switch with cable ties, using the horn to physically toggle it.
+3. Built a housing for the ESP32 and OpenRB-150 and mounted it on the lamp's pole.
+
+<div align="center">
+<img src="./docs/images/horn_design.png" width="220" alt="3D-printed horn design in Fusion 360">
+<img src="./docs/images/motor_mounted.jpg" width="220" alt="Motor and horn mounted on the lamp switch">
+</div>
+
+<br>
+
+## Progress
+
+- **Remote control over LTE** — controlled the motor from a mobile browser over LTE via Cloudflare Tunnel.
+
+  <img src="./docs/images/motor_move_LTE.png" width="140" alt="Motor controlled remotely over LTE">
+
+- **Motor: XM430 → XC330** — switched to a smaller motor; refactored control code to use motor profiles instead of hardcoded values.
+- **UI revamp** — simplified the browser UI for clearer switch control.
+
+  | Before | After |
+  |:---:|:---:|
+  | <img src="./docs/images/ui-before.jpg" width="140"> | <img src="./docs/images/ui-revamp.jpg" width="140"> |
+
+- **Standalone control** — connected ESP32 + OpenRB-150 to control the motor without a PC.
+
+  <img src="./docs/images/esp32_openrb_motor.jpg" width="180" alt="ESP32 and OpenRB motor control setup">
+
+- **VPS WebSocket relay** — deployed a VPS to relay WebSocket traffic between GitHub Pages and ESP32, avoiding port forwarding.
+- **Current-based position control** — switched from position control to current-based position control to protect the motor and the 3D-printed horn.
+- **Status sync on refresh** — the browser now requests the real motor position (`STATUS`) whenever the WebSocket connects or a toggle is pressed, instead of relying on a stored default.
+- **UI, round 2** — after adding current-based position control and status sync, simplified the UI further to show only what the user actually needs.
+
+  <!-- photo to be added -->
+
+<br>
+
+## Usage
+
+Open the GitHub Pages site and tap the toggle. That's it — it works the same over LTE or outside the house, thanks to the VPS relay.
+
+<details>
+<summary>Legacy: local dev testing via Cloudflare Quick Tunnel</summary>
+
+Used early on to test the browser UI from a phone before the VPS relay existed. Not needed for normal use anymore.
+
+```bash
+python -m uvicorn src.server:app --host 127.0.0.1 --port 8000
+bash scripts/start_quick_tunnel.sh
+```
+
+`cloudflared` prints a random `https://…trycloudflare.com` URL, valid only while the tunnel is running.
+
+</details>
+
+<br>
+
+## Roadmap
+
+### Phase 1 — Motor Control
+- [x] Set up Python environment, DYNAMIXEL Wizard 2.0 / SDK, U2D2
+- [x] Control the motor with Python scripts, using motor profiles
+- [x] Switch from XM430 to XC330-M288T-T
+- [x] Apply current-based position control to protect the motor and horn
+
+### Phase 2 — Remote Control
+- [x] Web interface for PC / mobile via FastAPI
+- [x] Remote control over LTE via Cloudflare Tunnel
+- [x] Revamp the UI for simpler switch control
+
+### Phase 3 — Standalone Control
+- [x] ESP32 + OpenRB-150 controlling the XC330
+- [x] ESP32 connected to the internet, no port forwarding
+- [x] VPS WebSocket relay with a custom domain
+- [x] Sync switch status with the real motor position on refresh
+
+### Phase 4 — Physical Integration
+- [x] Design a 3D-printed horn for the XC330 (Fusion 360)
+- [x] Mount motor + horn on the lamp's inline rocker switch
+- [x] Build an ESP32 + OpenRB housing, attach to the lamp pole
+- [x] Simplify the UI around current-based position + status sync
+
+<br>
+
+## User Requirements
+
+Enter your Wi-Fi SSID and password in `secret.h` so the ESP32 can connect to Wi-Fi.
