@@ -121,7 +121,7 @@ Status isn't polled continuously — it's only requested when needed: on page re
   <img src="./docs/images/motor_move_LTE.png" width="140" alt="Motor controlled remotely over LTE">
 
 - **Motor: XM430 → XC330** — switched to a smaller motor; refactored control code to use motor profiles instead of hardcoded values.
-- **UI revamp** — simplified the browser UI for clearer switch control.
+- **UI revamp** — simplified the UI to show only what the user actually needs.
 
   | Before | After |
   |:---:|:---:|
@@ -134,8 +134,7 @@ Status isn't polled continuously — it's only requested when needed: on page re
 - **VPS WebSocket relay** — deployed a VPS to relay WebSocket traffic between GitHub Pages and ESP32, avoiding port forwarding.
 - **Current-based position control** — switched from position control to current-based position control to protect the motor and the 3D-printed horn.
 - **Status sync on refresh** — the browser now requests the real motor position (`STATUS`) whenever the WebSocket connects or a toggle is pressed, instead of relying on a stored default.
-- **UI, round 2** — after adding current-based position control and status sync, simplified the UI further to show only what the user actually needs.
-
+- **UI, round 2** — after adding current-based position control and status sync, simplified the browser UI for clearer switch control.
   | Before | After |
   |:---:|:---:|
   | <img src="./docs/images/ui-v2-before.jpg" width="400"> | <img src="./docs/images/ui-v2-after.jpg" width="400"> |
