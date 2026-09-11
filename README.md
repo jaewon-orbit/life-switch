@@ -6,7 +6,7 @@ Control physical switch in the real world, remotely.
 
 ## 🎥 Demo
 
-[![Demo video](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
+[![Demo video](https://img.youtube.com/vi/YEqdWxMdJRQ/0.jpg)](https://www.youtube.com/watch?v=YEqdWxMdJRQ)
 
 <br>
 
@@ -98,7 +98,7 @@ Status isn't polled continuously — it's only requested when needed: on page re
 <div align="center">
 <img src="./docs/images/tear_drop_3d_model_1.png" width="295" alt="Teardrop-shaped design in Autodesk Fusion">
 <img src="./docs/images/tear_drop_3d_model_2.png" width="200" alt="Teardrop-shaped design in Autodesk Fusion">
-<a href="https://www.youtube.com/watch?v=VIDEO_ID"><img src="https://img.youtube.com/vi/VIDEO_ID/0.jpg" width="140" alt="Horn print, assembly, and test video"></a>
+<a href="https://www.youtube.com/watch?v=8kB1C54fzu8"><img src="https://img.youtube.com/vi/8kB1C54fzu8/0.jpg" width="140" alt="Horn print, assembly, and test video"></a>
 </div>
 <br> 
 5. Attached the motor + horn next to the lamp's inline rocker switch with cable ties, using the horn to physically toggle it.
