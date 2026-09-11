@@ -6,7 +6,7 @@ Control physical switch in the real world, remotely.
 
 ## 🎥 Demo
 
-[![Demo video](https://img.youtube.com/vi/YEqdWxMdJRQ/0.jpg)](https://www.youtube.com/watch?v=YEqdWxMdJRQ)
+[![Demo video](https://img.youtube.com/vi/YEqdWxMdJRQ/0.jpg)](https://www.youtube.com/watch?v=OXimIOwr_dM)
 
 <br>
 
